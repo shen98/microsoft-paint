@@ -21,12 +21,38 @@ Window::~Window()
 bool Window::initialize()
 {
     windowMat = cv::Mat(g_Width, g_Height, CV_8UC3);
+    bool result;
+
+    history = new History();
+    if (!history)
+    {
+        cout << "Cannot create new History object" << endl;
+        return false;
+    }
+
+
 
     menu = new Menu();
+    if (!menu)
+    {
+        cout << "Cannot create new menu object" << endl;
+        return false;
+    }
 
-    initialWindow();
+    result = menu->initialize(windowMat,g_Width);
+    if (!result)
+    {
+        cout << "Fail to initialize menu" << endl;
+        return false;
+    }
 
-    menu->initialize(windowMat,g_Width);
+    result = initialWindow();
+    if (!result)
+    {
+        cout << "Fail to initialize window." << endl;
+        return false;
+    }
+
 
     return true;
 }
@@ -42,6 +68,14 @@ bool Window::initialWindow()
     cv::setMouseCallback("1", my_mouse_calback, this);
 
     menu->initialMenu(windowMat, g_Width);
+    cv::Mat a;
+    windowMat.copyTo(a);
+    bool result = history->initialize(a);
+    if (!result)
+    {
+        cout << "Fail to initialize history" << endl;
+        return false;
+    }
     for (;;)
     {
         windowMat.copyTo(temp);
@@ -66,6 +100,17 @@ bool Window::initialWindow()
             wstring fileName = selectFile();
             loadImage(fileName, temp);
         }
+        else if (menu->getButtonState()[Buttons::undo])
+        {
+            menu->changeState(Buttons::cancel);
+            history->getPrevHistory().copyTo(windowMat);
+        }
+        else if (menu->getButtonState()[Buttons::redo])
+        {
+            menu->changeState(Buttons::cancel);
+            history->getNextHistory().copyTo(windowMat);
+        }
+
         cv::imshow("1", temp);
 
         int key = cv::waitKey(15);
@@ -75,9 +120,10 @@ bool Window::initialWindow()
             menu->changeDrawingState(false);
             menu->changeSelectState(false);
         }   
-        else if (key == 13 && menu->getButtonState()[Buttons::polygon])
+        else if (key == 13 && menu->getButtonState()[Buttons::polygon])         //enter key
         {
             if (endPos.x != 0 && endPos.y != 0) shapes->drawPolygon(windowMat, endPos, initPos, CV_RGB(255, 0, 0));
+            addToHistory(windowMat);
         }
     }
 
@@ -125,12 +171,16 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
             if (menu->getButtonState()[Buttons::polygon])
             {
                 shapes->drawPolygon(windowMat, startPos, endPos, CV_RGB(255, 0, 0));
+                addToHistory(windowMat);
                 startPos = endPos;
                 return;
             }
             if (menu->getButtonState()[Buttons::rectangle]) shapes->drawBox(windowMat, startPos, endPos, CV_RGB(255, 0, 0));
             else if (menu->getButtonState()[Buttons::circle]) shapes->drawCircle(windowMat, startPos, endPos, CV_RGB(255, 0, 0));
             else if (menu->getButtonState()[Buttons::triangle]) shapes->drawRegularTriangle(windowMat, startPos, endPos, CV_RGB(255, 0, 0));
+            cv::Mat a;
+            windowMat.copyTo(a);
+            addToHistory(a);
             menu->changeDrawingState(false);
             menu->changeSelectState(false);
             endPos.x = 0; endPos.y = 0;
@@ -167,6 +217,7 @@ wstring Window::selectFile()
     else
     {
         cout << "You canceled" << endl;
+        return NULL;
     }
 }
 
@@ -178,8 +229,28 @@ bool Window::loadImage(wstring fileName, cv::Mat& m)
     std::string converted_str = converter.to_bytes(fileName);
 
     cv::Mat img = cv::imread(converted_str);
+
+    if (img.rows > initialImageSize || img.cols > initialImageSize)
+    {
+        reScale(img, true);
+    }
     if(img.empty()) return false;
     img.copyTo(m(cv::Range(0, img.rows), cv::Range(0, img.cols)));
 
     return true;
 }
+
+void Window::reScale(cv::Mat& img, bool fixedRatio, double width, double height)
+{
+    if (fixedRatio)
+    {
+        if (img.rows < img.cols) cv::resize(img, img, cv::Size(width, img.rows / (img.cols / width)));
+        else cv::resize(img, img, cv::Size(img.cols / (img.rows/ width), width));
+    }
+}
+
+void Window::addToHistory(cv::Mat m)
+{
+    history->addHistory(m);
+}
+

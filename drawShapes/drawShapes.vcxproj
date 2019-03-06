@@ -145,6 +145,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="history.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="shapes.h" />
     <ClInclude Include="stdafx.h" />
@@ -153,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="drawShapes.cpp" />
+    <ClCompile Include="history.cpp" />
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="shapes.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -41,7 +41,7 @@ void Shapes::drawRegularTriangle(cv::Mat& img, cv::Point startPos, cv::Point end
     p1.x = endPos.x - 2 * (endPos.x - startPos.x);
     vertices.push_back(p1);
     p2.x = startPos.x;
-    p2.y = startPos.y - (sqrt(3) - 1) * abs(endPos.x - startPos.x);
+    p2.y = (int)startPos.y - (sqrt(3) - 1) * abs(endPos.x - startPos.x);
     vertices.push_back(p2);
 
     cv::polylines(img, vertices, true, color);

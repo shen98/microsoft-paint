@@ -11,7 +11,7 @@ using namespace std;
 enum Buttons
 {
     rectangle, circle, triangle,
-    polygon, import, c, d, e, f, cancel
+    polygon, import, undo, redo, e, f, cancel
 };
 
 
@@ -47,7 +47,7 @@ private:
     bool selectedFirst = false;
 
     vector<bool> g_buttonState;
-    vector<string> g_buttonName = { "square", "circle", "triangle", "polygon","import","c","d","e","f","cancel" };
+    vector<string> g_buttonName = { "square", "circle", "triangle", "polygon", "import", "undo", "redo", "e", "f", "cancel" };
 
 };
 

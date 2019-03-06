@@ -2,12 +2,17 @@
 #ifndef _WINDOW_H_
 #define _WINDOW_H_
 
-#include "menu.h"
-#include "shapes.h"
 #include <windows.h>
 #include <tchar.h>
 #include <codecvt>
 #include <opencv2/highgui/highgui_c.h>
+
+#include "menu.h"
+#include "shapes.h"
+#include "history.h"
+
+const double initialImageSize = 100.0;
+
 class Window
 {
 public:
@@ -21,6 +26,8 @@ public:
     void initPoints();
     wstring selectFile();
     bool loadImage(wstring fileName, cv::Mat& m);
+    void reScale(cv::Mat& img, bool fixedRatio, double width = initialImageSize, double height = initialImageSize);
+    void addToHistory(cv::Mat m);
 private:
     int g_Width;
     int g_Height;
@@ -29,6 +36,7 @@ private:
 
     Menu* menu;
     Shapes* shapes;
+    History* history;
 };
 
 #endif
