@@ -7,7 +7,7 @@ void my_mouse_calback(int event, int x, int y, int flags, void* param)
     w->onMouse(event, x, y, flags, param);
 }
 
-Window::Window(int width, int height)
+Window::Window(int height, int width)
 {
     g_Width = width;
     g_Height = height;
@@ -20,29 +20,46 @@ Window::~Window()
 
 bool Window::initialize()
 {
-    windowMat = cv::Mat(g_Width, g_Height, CV_8UC3);
+    windowMat = cv::Mat(g_Height, g_Width, CV_8UC3);
     bool result;
 
     history = new History();
     if (!history)
     {
-        cout << "Cannot create new History object" << endl;
+        cout << "Cannot create new History object." << endl;
         return false;
     }
 
-
+    image = new Image();
+    if (!image)
+    {
+        cout << "Cannot create new Image object." << endl;
+        return false;
+    }
 
     menu = new Menu();
     if (!menu)
     {
-        cout << "Cannot create new menu object" << endl;
+        cout << "Cannot create new Menu object." << endl;
         return false;
     }
 
     result = menu->initialize(windowMat,g_Width);
     if (!result)
     {
-        cout << "Fail to initialize menu" << endl;
+        cout << "Fail to initialize menu." << endl;
+        return false;
+    }
+
+    shapes = new Shapes();
+    if (!shapes)
+    {
+        return false;
+    }
+
+    result = shapes->initialShapes();
+    if (!result)
+    {
         return false;
     }
 
@@ -64,7 +81,7 @@ bool Window::initialWindow()
     windowMat = cv::Scalar::all(0);
 
     cv::namedWindow("1");
-
+    cv::moveWindow("1", 20, 20);
     cv::setMouseCallback("1", my_mouse_calback, this);
 
     menu->initialMenu(windowMat, g_Width);
@@ -79,13 +96,22 @@ bool Window::initialWindow()
     for (;;)
     {
         windowMat.copyTo(temp);
+        menu->selectShape(temp, mouseX, mouseY);
         if (menu->getButtonState()[Buttons::rectangle] && menu->startDrawing())
         {
             if (endPos.x != 0 && endPos.y != 0) shapes->drawBox(temp, startPos, endPos, CV_RGB(255,0,0));
         }
-        else if (menu->getButtonState()[Buttons::circle] && menu->startDrawing())
+        else if (menu->getButtonState()[Buttons::line] && menu->startDrawing())
         {
-            if (endPos.x != 0 && endPos.y != 0) shapes->drawCircle(temp, startPos, endPos, CV_RGB(255, 0, 0));
+            if (endPos.x != 0 && endPos.y != 0) shapes->drawLine(temp, startPos, endPos, CV_RGB(255, 0, 0));
+        }
+        else if (menu->getButtonState()[Buttons::ellipse] && menu->startDrawing())
+        {
+            if (endPos.x != 0 && endPos.y != 0) shapes->drawEllipse(temp, startPos, endPos, CV_RGB(255, 0, 0));
+        }
+        else if (menu->getButtonState()[Buttons::roundedRectangle] && menu->startDrawing())
+        {
+            if (endPos.x != 0 && endPos.y != 0) shapes->drawRoundedRectangle(temp, startPos, endPos, CV_RGB(255, 0, 0));
         }
         else if (menu->getButtonState()[Buttons::triangle] && menu->startDrawing())
         {
@@ -97,8 +123,12 @@ bool Window::initialWindow()
         }
         else if (menu->getButtonState()[Buttons::import])
         {
+            menu->changeState(Buttons::cancel);
             wstring fileName = selectFile();
-            loadImage(fileName, temp);
+            image->loadImage(fileName, windowMat);
+            cv::Mat a;
+            windowMat.copyTo(a);
+            addToHistory(a);
         }
         else if (menu->getButtonState()[Buttons::undo])
         {
@@ -113,7 +143,7 @@ bool Window::initialWindow()
 
         cv::imshow("1", temp);
 
-        int key = cv::waitKey(15);
+        int key = cv::waitKey(5);
         if (key == 27)      //Esc key
         {
             initPoints();
@@ -136,6 +166,7 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
     {
     case cv::EVENT_MOUSEMOVE:
     {
+        mouseX = x; mouseY = y;
         if (y < menu->getMenuHeight() || !menu->startDrawing() || !menu->getSelectedFirst()) break;
         endPos.x = x; endPos.y = y;
     }
@@ -157,9 +188,9 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
         }
         else if(y <= menu->getMenuHeight())
         {
-            int button = menu->getMouseClick(x);
+            int button = menu->getMouseClick(x, y);
             cout << button << endl;
-            menu->changeState(button);
+            if(button != -1) menu->changeState(button);
         }
 
     }
@@ -176,7 +207,9 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
                 return;
             }
             if (menu->getButtonState()[Buttons::rectangle]) shapes->drawBox(windowMat, startPos, endPos, CV_RGB(255, 0, 0));
-            else if (menu->getButtonState()[Buttons::circle]) shapes->drawCircle(windowMat, startPos, endPos, CV_RGB(255, 0, 0));
+            if (menu->getButtonState()[Buttons::line]) shapes->drawLine(windowMat, startPos, endPos, CV_RGB(255, 0, 0));
+            else if (menu->getButtonState()[Buttons::ellipse]) shapes->drawEllipse(windowMat, startPos, endPos, CV_RGB(255, 0, 0));
+            else if (menu->getButtonState()[Buttons::roundedRectangle]) shapes->drawRoundedRectangle(windowMat, startPos, endPos, CV_RGB(255, 0, 0));
             else if (menu->getButtonState()[Buttons::triangle]) shapes->drawRegularTriangle(windowMat, startPos, endPos, CV_RGB(255, 0, 0));
             cv::Mat a;
             windowMat.copyTo(a);
@@ -216,36 +249,7 @@ wstring Window::selectFile()
     }
     else
     {
-        cout << "You canceled" << endl;
         return NULL;
-    }
-}
-
-bool Window::loadImage(wstring fileName, cv::Mat& m)
-{
-    using convert_type = std::codecvt_utf8<wchar_t>;
-    std::wstring_convert<convert_type, wchar_t> converter;
-
-    std::string converted_str = converter.to_bytes(fileName);
-
-    cv::Mat img = cv::imread(converted_str);
-
-    if (img.rows > initialImageSize || img.cols > initialImageSize)
-    {
-        reScale(img, true);
-    }
-    if(img.empty()) return false;
-    img.copyTo(m(cv::Range(0, img.rows), cv::Range(0, img.cols)));
-
-    return true;
-}
-
-void Window::reScale(cv::Mat& img, bool fixedRatio, double width, double height)
-{
-    if (fixedRatio)
-    {
-        if (img.rows < img.cols) cv::resize(img, img, cv::Size(width, img.rows / (img.cols / width)));
-        else cv::resize(img, img, cv::Size(img.cols / (img.rows/ width), width));
     }
 }
 

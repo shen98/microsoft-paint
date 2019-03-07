@@ -5,12 +5,12 @@
 #include <opencv2/opencv.hpp>
 #include "window.h"
 
-const int g_Width = 500;
-const int g_Height = 500;
+const int g_Width = 1200;
+const int g_Height = 600;
 
 int main(int argc, char** argv)
 {
-    Window* w = new Window(g_Width, g_Height);
+    Window* w = new Window(g_Height, g_Width);
 
     w->initialize();
 
