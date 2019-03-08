@@ -14,10 +14,16 @@ Menu::~Menu()
 
 bool Menu::initialize(cv::Mat& m, int width)
 {
-    initialMenu(m, width);
+    //initialMenu(m, width);
 
     shape = new Shapes();
     if (!shape)
+    {
+        return false;
+    }
+
+    thickness = new Thickness();
+    if (!thickness)
     {
         return false;
     }
@@ -27,16 +33,18 @@ bool Menu::initialize(cv::Mat& m, int width)
 
 void Menu::initialMenu(cv::Mat& m, int width)
 {
-    cout << g_MenuHeight << endl;
     cv::rectangle(m, cv::Rect(cv::Point(0, 0), cv::Point(width, g_MenuHeight)), CV_RGB(230, 230, 250), -1);
 
-    cv::line(m, cv::Point(100, iconHeight + g_MenuOffset), cv::Point(100, g_MenuHeight - g_MenuOffset), CV_RGB(135, 206, 250));
-    cv::line(m, cv::Point(250, iconHeight + g_MenuOffset), cv::Point(250, g_MenuHeight - g_MenuOffset), CV_RGB(135, 206, 250));
-    cv::line(m, cv::Point(320, iconHeight + g_MenuOffset), cv::Point(320, g_MenuHeight - g_MenuOffset), CV_RGB(135, 206, 250));
-    cv::line(m, cv::Point(380, iconHeight + g_MenuOffset), cv::Point(380, g_MenuHeight - g_MenuOffset), CV_RGB(135, 206, 250));
-    cv::line(m, cv::Point(580, iconHeight + g_MenuOffset), cv::Point(580, g_MenuHeight - g_MenuOffset), CV_RGB(135, 206, 250));
+    cv::line(m, cv::Point(100, iconHeight + g_MenuOffsetHeight), cv::Point(100, g_MenuHeight - g_MenuOffsetHeight), CV_RGB(135, 206, 250));
+    cv::line(m, cv::Point(250, iconHeight + g_MenuOffsetHeight), cv::Point(250, g_MenuHeight - g_MenuOffsetHeight), CV_RGB(135, 206, 250));
+    cv::line(m, cv::Point(320, iconHeight + g_MenuOffsetHeight), cv::Point(320, g_MenuHeight - g_MenuOffsetHeight), CV_RGB(135, 206, 250));
+    cv::line(m, cv::Point(380, iconHeight + g_MenuOffsetHeight), cv::Point(380, g_MenuHeight - g_MenuOffsetHeight), CV_RGB(135, 206, 250));
+    cv::line(m, cv::Point(600, iconHeight + g_MenuOffsetHeight), cv::Point(600, g_MenuHeight - g_MenuOffsetHeight), CV_RGB(135, 206, 250));
+    cv::line(m, cv::Point(660, iconHeight + g_MenuOffsetHeight), cv::Point(660, g_MenuHeight - g_MenuOffsetHeight), CV_RGB(135, 206, 250));
 
     initialShapes(m);
+    thickness->initialThickness(m);
+
     /*for (int i = 0; i < g_ButtonNum; ++i)
     {
         string fileName = "buttons/" + g_buttonName[i] + ".png";
@@ -65,21 +73,22 @@ int Menu::getMouseClick(int mousePosX, int mousePosY)
     {
 
     }
-    else if (mousePosX > Section::shape)
+    else if (mousePosX > Section::shape && mousePosX < Section::thick)
     {
-        int index = (mousePosX - Section::shape - g_MenuOffset) / (shapeButtonWidth + shapeOffsetWidth)  +  
-            7 * ((mousePosY - iconHeight - g_MenuOffset) / (shapeButtonHeight + shapeOffsetHeight));
+        int index = (mousePosX - Section::shape - g_MenuOffsetWidth) / (shapeButtonWidth + shapeOffsetWidth)  +
+            7 * ((mousePosY - iconHeight - g_MenuOffsetHeight) / (shapeButtonHeight + shapeOffsetHeight));
         if (index < 0 || index > 20) return -1;
         else return Buttons::rectangle + index;
     }
+    else if (mousePosX > Section::thick && mousePosX < Section::colorOne) return Buttons::thickness;
 }
 
 void Menu::initialShapes(cv::Mat& m)
 {
-    int startX = 380 + g_MenuOffset, startY = iconHeight + g_MenuOffset;
+    int startX = 380 + g_MenuOffsetWidth, startY = iconHeight + g_MenuOffsetHeight;
     cv::rectangle(m, cv::Rect(cv::Point(startX, startY),
         cv::Point(startX + (shapeButtonWidth + shapeOffsetWidth * 2) * 7, startY + 3 * (shapeButtonHeight + shapeOffsetHeight * 2))), CV_RGB(255,255,255), -1);
-    cv::putText(m, "Shapes", cv::Point(480 - 2.5 * textSize, g_MenuHeight - g_MenuOffset - textSize), cv::FONT_HERSHEY_TRIPLEX, 0.5, CV_RGB(0, 0, 0));
+    cv::putText(m, "Shapes", cv::Point(480 - 2.5 * textSize, g_MenuHeight - g_MenuOffsetHeight - textSize), cv::FONT_HERSHEY_TRIPLEX, 0.5, CV_RGB(0, 0, 0));
 
     shape->drawBox(m, cv::Point(startX + shapeOffsetWidth, startY + shapeOffsetHeight), 
         cv::Point(startX + shapeButtonWidth + shapeOffsetWidth - 1, startY + shapeOffsetHeight + shapeButtonHeight - 1), defaultShapeColor);
@@ -94,15 +103,49 @@ void Menu::initialShapes(cv::Mat& m)
 
 }
 
+
+
 void Menu::selectShape(cv::Mat& m, int mousePosX, int mousePosY)
 {
-    if (mousePosY > g_MenuHeight || mousePosY < iconHeight || mousePosX < Section::shape) return;
-    int index = (mousePosX - Section::shape - g_MenuOffset) / (shapeButtonWidth + shapeOffsetWidth) +
-        7 * ((mousePosY - iconHeight - g_MenuOffset) / (shapeButtonHeight + shapeOffsetHeight));
+    if (mousePosY > g_MenuHeight || mousePosY < iconHeight || mousePosX < Section::shape || mousePosX > Section::thick) return;
+    int index = (mousePosX - Section::shape - g_MenuOffsetWidth) / (shapeButtonWidth + shapeOffsetWidth) +
+        7 * ((mousePosY - iconHeight - g_MenuOffsetHeight) / (shapeButtonHeight + shapeOffsetHeight));
     if (index < 0 || index > 20) return;
 
-    cv::rectangle(m, cv::Rect(cv::Point((index % 7) * shapeButtonWidth + 380 + shapeOffsetWidth * (index % 7 * 2) + g_MenuOffset, (index) / 7 * shapeButtonHeight + iconHeight + g_MenuOffset + (index / 7 * 2) * shapeOffsetHeight),
-        cv::Point((index % 7 + 1) * shapeButtonWidth + 380 + shapeOffsetWidth * (index % 7 * 2 + 2) + g_MenuOffset, (1 + index / 7) * shapeButtonHeight + iconHeight + g_MenuOffset + (index / 7 * 2 + 2) * shapeOffsetHeight)), defaultShapeColor);
+    cv::rectangle(m, cv::Rect(cv::Point((index % 7) * shapeButtonWidth + 380 + shapeOffsetWidth * (index % 7 * 2) + g_MenuOffsetWidth, (index) / 7 * shapeButtonHeight + iconHeight + g_MenuOffsetHeight + (index / 7 * 2) * shapeOffsetHeight),
+        cv::Point((index % 7 + 1) * shapeButtonWidth + 380 + shapeOffsetWidth * (index % 7 * 2 + 2) + g_MenuOffsetWidth, (1 + index / 7) * shapeButtonHeight + iconHeight + g_MenuOffsetHeight + (index / 7 * 2 + 2) * shapeOffsetHeight)), defaultShapeColor);
+}
+
+void Menu::selectedShape(cv::Mat& m, int index)
+{
+    if (g_selectedShape) initialShapes(m);
+    cv::Mat temp;
+    m.copyTo(temp);
+
+    cv::rectangle(temp, cv::Rect(cv::Point((index % 7) * shapeButtonWidth + 380 + shapeOffsetWidth * (index % 7 * 2) + g_MenuOffsetWidth, (index) / 7 * shapeButtonHeight + iconHeight + g_MenuOffsetHeight + (index / 7 * 2) * shapeOffsetHeight),
+        cv::Point((index % 7 + 1) * shapeButtonWidth + 380 + shapeOffsetWidth * (index % 7 * 2 + 2) + g_MenuOffsetWidth, (1 + index / 7) * shapeButtonHeight + iconHeight + g_MenuOffsetHeight + (index / 7 * 2 + 2) * shapeOffsetHeight)), CV_RGB(0, 191, 255), -1);
+
+    double alpha = 0.3;
+    cv::addWeighted(temp, alpha, m, 1.0 - alpha, 0.0, m);
+
+    cv::rectangle(m, cv::Rect(cv::Point((index % 7) * shapeButtonWidth + 380 + shapeOffsetWidth * (index % 7 * 2) + g_MenuOffsetWidth, (index) / 7 * shapeButtonHeight + iconHeight + g_MenuOffsetHeight + (index / 7 * 2) * shapeOffsetHeight),
+        cv::Point((index % 7 + 1) * shapeButtonWidth + 380 + shapeOffsetWidth * (index % 7 * 2 + 2) + g_MenuOffsetWidth, (1 + index / 7) * shapeButtonHeight + iconHeight + g_MenuOffsetHeight + (index / 7 * 2 + 2) * shapeOffsetHeight)), defaultShapeColor);
+
+    g_selectedShape = true;
+}
+
+
+
+
+
+void Menu::initialColorOne(cv::Mat& m)
+{
+    cv::rectangle(m, cv::Rect(cv::Point(600 + g_MenuOffsetWidth, iconHeight + g_MenuOffsetHeight), cv::Point(660 - g_MenuOffsetWidth, g_MenuHeight - g_MenuOffsetHeight)), defaultShapeColor);
+}
+
+void Menu::initialColorTwo(cv::Mat& m)
+{
+
 }
 
 void Menu::changeState(int num)
@@ -135,6 +178,11 @@ bool Menu::getSelectedFirst()
 void Menu::changeSelectState(bool state)
 {
     selectedFirst = state;
+}
+
+void Menu::changeSelectThicknessState(bool state)
+{
+    g_selectThickness = state;
 }
 
 int Menu::getMenuHeight()

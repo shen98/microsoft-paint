@@ -8,12 +8,13 @@
 #include <iostream>
 
 #include "shapes.h"
+#include "thickness.h"
 using namespace std;
 
 enum Buttons
 {
     rectangle, line, ellipse, roundedRectangle, triangle,
-    polygon, import, undo, redo, choose, f, cancel
+    polygon, thickness, import, undo, redo, choose, f, cancel
 };
 
 enum Section
@@ -22,7 +23,9 @@ enum Section
     image = 100,
     tool = 250,
     brush = 320,
-    shape = 380
+    shape = 380,
+    thick = 600,
+    colorOne = 660
 };
 
 class Menu
@@ -38,6 +41,13 @@ public:
 
     void initialShapes(cv::Mat& m);
     void selectShape(cv::Mat& m, int mousePosX, int mousePosY);
+    void selectedShape(cv::Mat& m, int index);
+
+
+
+    void initialColorOne(cv::Mat& m);
+
+    void initialColorTwo(cv::Mat& m);
 
     void changeState(int num);
 
@@ -46,29 +56,23 @@ public:
 
     bool getSelectedFirst();
     void changeSelectState(bool state);
+    void changeSelectThicknessState(bool state);
     int getMenuHeight();
 
     vector<bool> getButtonState();
 
 private:
-    const int g_MenuHeight = 130;
-    const int g_MenuOffset = 5;
-    const int g_ButtonSize = 40;
-    const int g_ButtonNum = 10;
-    const int iconHeight = 20;
-    const int textSize = 10;
-    const int shapeButtonWidth = 20;
-    const int shapeButtonHeight = 16;
-    const int shapeOffsetWidth = 2;
-    const int shapeOffsetHeight = 3;
     bool g_startDrawing = false;
     bool g_drawShape = false;
     bool selectedFirst = false;
+    bool g_selectedShape = false;
+    bool g_selectThickness = false;
 
     vector<bool> g_buttonState;
-    //vector<string> g_buttonName = { "square", "circle", "triangle", "polygon", "import", "undo", "redo", "choose", "f", "cancel" };
+    //vector<string> g_buttonName = { "square", "circle", "triangle", "polygon", "import" "undo", "redo", "choose", "f", "cancel" };
 
     Shapes* shape;
+    Thickness* thickness;
     cv::Scalar defaultShapeColor = CV_RGB(30, 144, 255);
 };
 

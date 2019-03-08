@@ -146,6 +146,7 @@ bool Window::initialWindow()
         int key = cv::waitKey(5);
         if (key == 27)      //Esc key
         {
+            if (!menu->startDrawing()) break;
             initPoints();
             menu->changeDrawingState(false);
             menu->changeSelectState(false);
@@ -189,7 +190,10 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
         else if(y <= menu->getMenuHeight())
         {
             int button = menu->getMouseClick(x, y);
-            cout << button << endl;
+            if (button >= Buttons::rectangle && button <= Buttons::triangle)                    //add selected shape effect
+            {
+                menu->selectedShape(windowMat, button);
+            }
             if(button != -1) menu->changeState(button);
         }
 

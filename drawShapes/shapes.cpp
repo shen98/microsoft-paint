@@ -3,7 +3,6 @@
 
 Shapes::Shapes()
 {
-    thickness = 1;
 }
 
 Shapes::~Shapes()
@@ -15,11 +14,10 @@ Shapes::~Shapes()
 
 bool Shapes::initialShapes()
 {
-    thickness = 1;
     return true;
 }
 
-void Shapes::drawBox(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color)
+void Shapes::drawBox(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
 {
     cv::Rect box(startPos, endPos);
     if (box.width < 0)
@@ -33,7 +31,7 @@ void Shapes::drawBox(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Sca
         box.height *= -1;
     }
 
-    cv::rectangle(img, box.tl(), box.br(), color);
+    cv::rectangle(img, box.tl(), box.br(), color, thickness);
 }
 
 void Shapes::drawCircle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color)
@@ -61,9 +59,9 @@ void Shapes::drawRightTriangle(cv::Mat& img, cv::Point startPos, cv::Point endPo
 
 }
 
-void Shapes::drawLine(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color)
+void Shapes::drawLine(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
 {
-    cv::line(img, startPos, endPos, color, 1, cv::LINE_AA);
+    cv::line(img, startPos, endPos, color, thickness, cv::LINE_AA);
 }
 
 void Shapes::drawPolygon(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color)
