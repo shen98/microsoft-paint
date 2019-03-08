@@ -17,13 +17,13 @@ public:
     bool initialShapes();
 
     void drawBox(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness = 1);
-    void drawCircle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color);
-    void drawRegularTriangle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color);
-    void drawRightTriangle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color);
+    void drawCircle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness = 1);
+    void drawRegularTriangle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness = 1);
+    void drawRightTriangle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness = 1);
     void drawLine(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness = 1);
-    void drawPolygon(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color);
-    void drawEllipse(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color);
-    void drawRoundedRectangle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color);
+    void drawPolygon(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness = 1);
+    void drawEllipse(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness = 1);
+    void drawRoundedRectangle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness = 1);
     void changeColor(cv::Scalar color);
 private:
 };

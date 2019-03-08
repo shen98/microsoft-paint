@@ -9,24 +9,16 @@
 
 #include "shapes.h"
 #include "thickness.h"
+#include "color.h"
 using namespace std;
 
 enum Buttons
 {
     rectangle, line, ellipse, roundedRectangle, triangle,
-    polygon, thickness, import, undo, redo, choose, f, cancel
+    polygon, thickness, colorOne, colorTwo, import, undo, redo, choose, cancel
 };
 
-enum Section
-{
-    clipboard = 0,
-    image = 100,
-    tool = 250,
-    brush = 320,
-    shape = 380,
-    thick = 600,
-    colorOne = 660
-};
+
 
 class Menu
 {
@@ -43,11 +35,8 @@ public:
     void selectShape(cv::Mat& m, int mousePosX, int mousePosY);
     void selectedShape(cv::Mat& m, int index);
 
-
-
-    void initialColorOne(cv::Mat& m);
-
-    void initialColorTwo(cv::Mat& m);
+    void selectThickness(cv::Mat& m, int mousePosX, int mousePosY, int selected);
+    int changeThickness(int mousePosX, int mousePosY);
 
     void changeState(int num);
 
@@ -56,7 +45,9 @@ public:
 
     bool getSelectedFirst();
     void changeSelectState(bool state);
-    void changeSelectThicknessState(bool state);
+
+    bool getSelectThickness();
+    void changeSelectThickness(bool state);
     int getMenuHeight();
 
     vector<bool> getButtonState();
@@ -68,12 +59,16 @@ private:
     bool g_selectedShape = false;
     bool g_selectThickness = false;
 
+    int thickLevel = 1;
+
     vector<bool> g_buttonState;
     //vector<string> g_buttonName = { "square", "circle", "triangle", "polygon", "import" "undo", "redo", "choose", "f", "cancel" };
 
     Shapes* shape;
-    Thickness* thickness;
     cv::Scalar defaultShapeColor = CV_RGB(30, 144, 255);
+
+    Thickness* thickness;
+    Color* color;
 };
 
 #endif

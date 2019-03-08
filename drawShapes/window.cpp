@@ -99,27 +99,31 @@ bool Window::initialWindow()
         menu->selectShape(temp, mouseX, mouseY);
         if (menu->getButtonState()[Buttons::rectangle] && menu->startDrawing())
         {
-            if (endPos.x != 0 && endPos.y != 0) shapes->drawBox(temp, startPos, endPos, CV_RGB(255,0,0));
+            if (endPos.x != 0 && endPos.y != 0) shapes->drawBox(temp, startPos, endPos, CV_RGB(255,0,0), thichLevel);
         }
         else if (menu->getButtonState()[Buttons::line] && menu->startDrawing())
         {
-            if (endPos.x != 0 && endPos.y != 0) shapes->drawLine(temp, startPos, endPos, CV_RGB(255, 0, 0));
+            if (endPos.x != 0 && endPos.y != 0) shapes->drawLine(temp, startPos, endPos, CV_RGB(255, 0, 0), thichLevel);
         }
         else if (menu->getButtonState()[Buttons::ellipse] && menu->startDrawing())
         {
-            if (endPos.x != 0 && endPos.y != 0) shapes->drawEllipse(temp, startPos, endPos, CV_RGB(255, 0, 0));
+            if (endPos.x != 0 && endPos.y != 0) shapes->drawEllipse(temp, startPos, endPos, CV_RGB(255, 0, 0), thichLevel);
         }
         else if (menu->getButtonState()[Buttons::roundedRectangle] && menu->startDrawing())
         {
-            if (endPos.x != 0 && endPos.y != 0) shapes->drawRoundedRectangle(temp, startPos, endPos, CV_RGB(255, 0, 0));
+            if (endPos.x != 0 && endPos.y != 0) shapes->drawRoundedRectangle(temp, startPos, endPos, CV_RGB(255, 0, 0), thichLevel);
         }
         else if (menu->getButtonState()[Buttons::triangle] && menu->startDrawing())
         {
-            if (endPos.x != 0 && endPos.y != 0) shapes->drawRegularTriangle(temp, startPos, endPos, CV_RGB(255, 0, 0));
+            if (endPos.x != 0 && endPos.y != 0) shapes->drawRegularTriangle(temp, startPos, endPos, CV_RGB(255, 0, 0), thichLevel);
         }
         else if (menu->getButtonState()[Buttons::polygon] && menu->startDrawing())
         {
-            if (endPos.x != 0 && endPos.y != 0) shapes->drawPolygon(temp, startPos, endPos, CV_RGB(255, 0, 0));
+            if (endPos.x != 0 && endPos.y != 0) shapes->drawPolygon(temp, startPos, endPos, CV_RGB(255, 0, 0), thichLevel);
+        }
+        else if (menu->getButtonState()[Buttons::thickness])
+        {
+            menu->selectThickness(temp, mouseX, mouseY, thichLevel);
         }
         else if (menu->getButtonState()[Buttons::import])
         {
@@ -140,6 +144,7 @@ bool Window::initialWindow()
             menu->changeState(Buttons::cancel);
             history->getNextHistory().copyTo(windowMat);
         }
+
 
         cv::imshow("1", temp);
 
@@ -174,7 +179,24 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
     break;
     case cv::EVENT_LBUTTONDOWN:
     {
-        if (y >= menu->getMenuHeight() && menu->startDrawing())
+        if (menu->getSelectThickness())
+        {
+            int thick = menu->changeThickness(x, y);
+            cout << thick << endl;
+            if (thick == -1) break;
+            else
+            {
+                thichLevel = 1 + thick * 2;
+            }
+            menu->changeSelectThickness(false);
+            if (g_prevSelectedShape != -1)
+            {
+                menu->changeState(g_prevSelectedShape);
+                endPos.x = 0; endPos.y = 0;
+            }
+            else menu->changeState(Buttons::cancel);
+        }
+        else if (y >= menu->getMenuHeight() && menu->startDrawing())
         {
             if(menu->getButtonState()[Buttons::polygon] && (initPos.x == 0 && initPos.y == 0))
             {
@@ -195,6 +217,8 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
                 menu->selectedShape(windowMat, button);
             }
             if(button != -1) menu->changeState(button);
+            if (button >= Buttons::rectangle && button <= Buttons::polygon) g_prevSelectedShape = button;
+            if (button == Buttons::thickness) menu->changeSelectThickness(true);
         }
 
     }
@@ -203,18 +227,19 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
     {
         if (y >= menu->getMenuHeight() && menu->startDrawing())
         {
+            if(endPos.x == 0 && endPos.y == 0) break;
             if (menu->getButtonState()[Buttons::polygon])
             {
-                shapes->drawPolygon(windowMat, startPos, endPos, CV_RGB(255, 0, 0));
+                shapes->drawPolygon(windowMat, startPos, endPos, CV_RGB(255, 0, 0), thichLevel);
                 addToHistory(windowMat);
                 startPos = endPos;
                 return;
             }
-            if (menu->getButtonState()[Buttons::rectangle]) shapes->drawBox(windowMat, startPos, endPos, CV_RGB(255, 0, 0));
-            if (menu->getButtonState()[Buttons::line]) shapes->drawLine(windowMat, startPos, endPos, CV_RGB(255, 0, 0));
-            else if (menu->getButtonState()[Buttons::ellipse]) shapes->drawEllipse(windowMat, startPos, endPos, CV_RGB(255, 0, 0));
-            else if (menu->getButtonState()[Buttons::roundedRectangle]) shapes->drawRoundedRectangle(windowMat, startPos, endPos, CV_RGB(255, 0, 0));
-            else if (menu->getButtonState()[Buttons::triangle]) shapes->drawRegularTriangle(windowMat, startPos, endPos, CV_RGB(255, 0, 0));
+            if (menu->getButtonState()[Buttons::rectangle]) shapes->drawBox(windowMat, startPos, endPos, CV_RGB(255, 0, 0), thichLevel);
+            if (menu->getButtonState()[Buttons::line]) shapes->drawLine(windowMat, startPos, endPos, CV_RGB(255, 0, 0), thichLevel);
+            else if (menu->getButtonState()[Buttons::ellipse]) shapes->drawEllipse(windowMat, startPos, endPos, CV_RGB(255, 0, 0), thichLevel);
+            else if (menu->getButtonState()[Buttons::roundedRectangle]) shapes->drawRoundedRectangle(windowMat, startPos, endPos, CV_RGB(255, 0, 0), thichLevel);
+            else if (menu->getButtonState()[Buttons::triangle]) shapes->drawRegularTriangle(windowMat, startPos, endPos, CV_RGB(255, 0, 0), thichLevel);
             cv::Mat a;
             windowMat.copyTo(a);
             addToHistory(a);

@@ -145,6 +145,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="color.h" />
     <ClInclude Include="data.h" />
     <ClInclude Include="history.h" />
     <ClInclude Include="image.h" />
@@ -156,6 +157,7 @@
     <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="color.cpp" />
     <ClCompile Include="drawShapes.cpp" />
     <ClCompile Include="history.cpp" />
     <ClCompile Include="image.cpp" />

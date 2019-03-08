@@ -32,6 +32,10 @@ private:
     cv::Mat windowMat, temp;
     int mouseX, mouseY;
 
+    int g_prevSelectedShape = -1;
+
+    int thichLevel = 1;
+
     Menu* menu;
     Shapes* shapes;
     History* history;
