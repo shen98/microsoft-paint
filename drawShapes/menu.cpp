@@ -37,7 +37,7 @@ bool Menu::initialize(cv::Mat& m, int width)
     return true;
 }
 
-void Menu::initialMenu(cv::Mat& m, int width)
+void Menu::initialMenu(cv::Mat& m, int width, cv::Scalar colorOne, cv::Scalar colorTwo, int thickLevel)
 {
     cv::rectangle(m, cv::Rect(cv::Point(0, 0), cv::Point(width, g_MenuHeight)), CV_RGB(230, 230, 250), -1);
 
@@ -50,7 +50,7 @@ void Menu::initialMenu(cv::Mat& m, int width)
 
     initialShapes(m);
     thickness->initialThickness(m);
-    color->initializeColor(m);
+    color->initializeColor(m, colorOne, colorTwo);
     /*for (int i = 0; i < g_ButtonNum; ++i)
     {
         string fileName = "buttons/" + g_buttonName[i] + ".png";
@@ -149,6 +149,11 @@ void Menu::selectThickness(cv::Mat& m, int mousePosX, int mousePosY, int selecte
 int Menu::changeThickness(int mousePosX, int mousePosY)
 {
     return thickness->changeThickness(mousePosX, mousePosY);
+}
+
+void Menu::selectColor(cv::Mat& m, int mousePosX, int mousePosY)
+{
+    color->selectColor(m, mousePosX, mousePosY);
 }
 
 void Menu::changeState(int num)

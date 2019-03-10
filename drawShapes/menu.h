@@ -28,7 +28,7 @@ public:
 
     bool initialize(cv::Mat& m, int width);
 
-    void initialMenu(cv::Mat& m, int width);
+    void initialMenu(cv::Mat& m, int width, cv::Scalar colorOne, cv::Scalar colorTwo, int thickLevel);
     int getMouseClick(int mousePosX, int mousePosY);
 
     void initialShapes(cv::Mat& m);
@@ -37,6 +37,8 @@ public:
 
     void selectThickness(cv::Mat& m, int mousePosX, int mousePosY, int selected);
     int changeThickness(int mousePosX, int mousePosY);
+
+    void selectColor(cv::Mat& m, int mousePosX, int mousePosY);
 
     void changeState(int num);
 

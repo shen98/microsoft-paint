@@ -34,6 +34,8 @@ private:
 
     int g_prevSelectedShape = -1;
 
+    cv::Scalar colorOne, colorTwo;
+
     int thichLevel = 1;
 
     Menu* menu;
