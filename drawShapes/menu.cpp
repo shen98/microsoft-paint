@@ -4,7 +4,7 @@
 Menu::Menu()
 {
     g_buttonState = vector<bool>(g_ButtonNum, false);
-    shape = NULL;
+    shapes = NULL;
 }
 
 Menu::~Menu()
@@ -16,7 +16,7 @@ bool Menu::initialize(cv::Mat& m, int width)
 {
     //initialMenu(m, width);
 
-    shape = new Shapes();
+    shapes = new Shapes();
     if (!shape)
     {
         return false;
@@ -96,15 +96,15 @@ void Menu::initialShapes(cv::Mat& m)
         cv::Point(startX + (shapeButtonWidth + shapeOffsetWidth * 2) * 7, startY + 3 * (shapeButtonHeight + shapeOffsetHeight * 2))), CV_RGB(255,255,255), -1);
     cv::putText(m, "Shapes", cv::Point(480 - 2.5 * textSize, g_MenuHeight - g_MenuOffsetHeight - textSize), cv::FONT_HERSHEY_TRIPLEX, 0.5, CV_RGB(0, 0, 0));
 
-    shape->drawBox(m, cv::Point(startX + shapeOffsetWidth, startY + shapeOffsetHeight), 
+    shapes->drawBox(m, cv::Point(startX + shapeOffsetWidth, startY + shapeOffsetHeight), 
         cv::Point(startX + shapeButtonWidth + shapeOffsetWidth - 1, startY + shapeOffsetHeight + shapeButtonHeight - 1), defaultShapeColor);
-    shape->drawLine(m, cv::Point(startX + shapeOffsetWidth * 3 + shapeButtonWidth, startY + shapeOffsetHeight), 
+    shapes->drawLine(m, cv::Point(startX + shapeOffsetWidth * 3 + shapeButtonWidth, startY + shapeOffsetHeight), 
         cv::Point(startX + shapeButtonWidth * 2 + shapeOffsetWidth * 3 - 1, startY + shapeOffsetHeight + shapeButtonHeight - 1), defaultShapeColor);
-    shape->drawEllipse(m, cv::Point(startX + shapeOffsetWidth * 5 + shapeButtonWidth * 2.5, startY + shapeOffsetWidth + 0.5 * shapeButtonHeight),
+    shapes->drawEllipse(m, cv::Point(startX + shapeOffsetWidth * 5 + shapeButtonWidth * 2.5, startY + shapeOffsetWidth + 0.5 * shapeButtonHeight),
         cv::Point(startX + shapeButtonWidth * 2 + shapeOffsetWidth * 5, startY + shapeOffsetHeight - 1), defaultShapeColor);
-    shape->drawRoundedRectangle(m, cv::Point(startX + shapeOffsetWidth * 7 + 3.5 * shapeButtonWidth, startY + shapeOffsetHeight + 0.5 * shapeButtonHeight),
+    shapes->drawRoundedRectangle(m, cv::Point(startX + shapeOffsetWidth * 7 + 3.5 * shapeButtonWidth, startY + shapeOffsetHeight + 0.5 * shapeButtonHeight),
         cv::Point(startX + shapeButtonWidth * 3 + shapeOffsetWidth * 7 + 1, startY + shapeOffsetHeight + 1), defaultShapeColor);
-    shape->drawRegularTriangle(m, cv::Point(startX + shapeOffsetWidth * 9 + 4.5 * shapeButtonWidth, startY + shapeOffsetHeight + 0.5 * shapeButtonHeight - 1),
+    shapes->drawRegularTriangle(m, cv::Point(startX + shapeOffsetWidth * 9 + 4.5 * shapeButtonWidth, startY + shapeOffsetHeight + 0.5 * shapeButtonHeight - 1),
         cv::Point(startX + shapeButtonWidth * 4 + shapeOffsetWidth * 9, startY + shapeOffsetHeight + shapeButtonWidth - 5), defaultShapeColor);
 
 }
@@ -154,6 +154,12 @@ int Menu::changeThickness(int mousePosX, int mousePosY)
 void Menu::selectColor(cv::Mat& m, int mousePosX, int mousePosY)
 {
     color->selectColor(m, mousePosX, mousePosY);
+    color->selectDisplayColor(m, mousePosX, mousePosY);
+}
+
+cv::Scalar Menu::changeColor(int mousePosX, int mousePosY)
+{
+    return color->changeDrawingColor( mousePosX, mousePosY);
 }
 
 void Menu::changeState(int num)

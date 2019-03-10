@@ -10,6 +10,7 @@
 #include "shapes.h"
 #include "thickness.h"
 #include "color.h"
+#include "data.h"
 using namespace std;
 
 enum Buttons
@@ -39,6 +40,7 @@ public:
     int changeThickness(int mousePosX, int mousePosY);
 
     void selectColor(cv::Mat& m, int mousePosX, int mousePosY);
+    cv::Scalar changeColor(int mousePosX, int mousePosY);
 
     void changeState(int num);
 
@@ -66,7 +68,7 @@ private:
     vector<bool> g_buttonState;
     //vector<string> g_buttonName = { "square", "circle", "triangle", "polygon", "import" "undo", "redo", "choose", "f", "cancel" };
 
-    Shapes* shape;
+    Shapes* shapes;
     cv::Scalar defaultShapeColor = CV_RGB(30, 144, 255);
 
     Thickness* thickness;

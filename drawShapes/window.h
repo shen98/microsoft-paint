@@ -34,7 +34,7 @@ private:
 
     int g_prevSelectedShape = -1;
 
-    cv::Scalar colorOne, colorTwo;
+    cv::Scalar colorOne, colorTwo, drawingColor;
 
     int thichLevel = 1;
 

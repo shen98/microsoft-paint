@@ -13,6 +13,7 @@ const int shapeButtonWidth = 20;
 const int shapeButtonHeight = 16;
 const int shapeOffsetWidth = 2;
 const int shapeOffsetHeight = 3;
+const cv::Scalar selectedBlockColor = CV_RGB(0, 191, 255);
 
 enum Section
 {
