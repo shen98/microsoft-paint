@@ -16,6 +16,7 @@ const int shapeOffsetHeight = 3;
 const cv::Scalar selectedBlockColor = CV_RGB(0, 191, 255);
 const cv::Scalar black = CV_RGB(0, 0, 0);
 const cv::Scalar white = CV_RGB(255, 255, 255);
+const cv::Scalar defaultMenuColor = CV_RGB(230, 230, 250);
 
 enum Section
 {

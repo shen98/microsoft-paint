@@ -40,7 +40,7 @@ public:
 
     void selectColor(cv::Mat& m, int mousePosX, int mousePosY);
     cv::Scalar changeColor(cv::Mat& m, int mousePosX, int mousePosY);
-    void changeDisplayColorNum(int mousePosX, int mousePosY);
+    cv::Scalar changeDisplayColorNum(cv::Mat& m, int mousePosX, int mousePosY);
 
     void changeState(int num);
 

@@ -16,12 +16,14 @@ public:
     bool initialize();
 
     void initializeColor(cv::Mat& m);
+    void initialDisplayColor(cv::Mat& m);
 
     void selectColor(cv::Mat& m, int mousePosX, int mousePosY);
 
     void selectDisplayColor(cv::Mat& m, int mousePosX, int mousePosY);
+    cv::Scalar selectedDisplayColor(cv::Mat& m);
 
-    void changeDisplayColorNum(int mousePosX, int mousePosY);               //select color one or color two
+    bool changeDisplayColorNum(int mousePosX, int mousePosY);               //select color one or color two
 
     cv::Scalar changeDrawingColor(int mousePosX, int mousePosY);           //change drawing color
 
@@ -52,6 +54,7 @@ private:
 
     cv::Scalar black = CV_RGB(0, 0, 0);
     cv::Scalar white = CV_RGB(255,255,255);
+    cv::Scalar colorOne, colorTwo;
     Shapes* shape;
 };
 

@@ -150,7 +150,7 @@ bool Window::initialWindow()
 
         cv::imshow("1", temp);
 
-        int key = cv::waitKey(50);
+        int key = cv::waitKey(10);
         if (key == 27)      //Esc key
         {
             if (!menu->startDrawing()) break;
@@ -175,13 +175,20 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
     case cv::EVENT_MOUSEMOVE:
     {
         mouseX = x; mouseY = y;
+
         if (y < menu->getMenuHeight() || !menu->startDrawing() || !menu->getSelectedFirst()) break;
         endPos.x = x; endPos.y = y;
     }
     break;
     case cv::EVENT_LBUTTONDOWN:
     {
-        menu->changeDisplayColorNum(x, y);
+        cv::Scalar c = menu->changeDisplayColorNum(windowMat, x, y);
+        if (c != cv::Scalar(-1, -1, -1))
+        {
+            drawingColor = c;
+            menu->changeState(g_prevSelectedShape);
+            break;
+        }
         if (menu->changeColor(windowMat, x, y) != cv::Scalar(-1, -1, -1))
         {
             drawingColor = menu->changeColor(windowMat, x, y);
