@@ -48,7 +48,7 @@ void Shapes::drawRegularTriangle(cv::Mat& img, cv::Point startPos, cv::Point end
     p1.x = endPos.x - 2 * (endPos.x - startPos.x);
     vertices.push_back(p1);
     p2.x = startPos.x;
-    p2.y = (int)startPos.y - (sqrt(3) - 1) * abs(endPos.x - startPos.x);
+    p2.y = startPos.y - (sqrt(3) - 1) * abs(endPos.x - startPos.x);
     vertices.push_back(p2);
 
     cv::polylines(img, vertices, true, color, thickness, cv::LINE_AA);
@@ -102,11 +102,24 @@ void Shapes::drawDottedLine(cv::Mat& m, cv::Point startPos, cv::Point endPos, cv
     {
         if (i % 5 != 0)
         {
-            (*it)[0] = color[0]; 
-            (*it)[1] = color[1]; 
-            (*it)[2] = color[2]; 
+            (*it)[0] = (uchar)color[0]; 
+            (*it)[1] = (uchar)color[1]; 
+            (*it)[2] = (uchar)color[2]; 
         }
     }
+}
+
+void Shapes::drawDottedRectangle(cv::Mat& m, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness /*= 1*/)
+{
+    cv::Point p1 = startPos;
+    cv::Point p2 = cv::Point(endPos.x, startPos.y);
+    cv::Point p3 = cv::Point(startPos.x, endPos.y);
+    cv::Point p4 = endPos;
+
+    drawDottedLine(m, p1, p2, color);
+    drawDottedLine(m, p1, p3, color);
+    drawDottedLine(m, p2, p4, color);
+    drawDottedLine(m, p3, p4, color);
 }
 
 void Shapes::changeColor(cv::Scalar color)

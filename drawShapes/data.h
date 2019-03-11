@@ -13,9 +13,14 @@ const int shapeButtonWidth = 20;
 const int shapeButtonHeight = 16;
 const int shapeOffsetWidth = 2;
 const int shapeOffsetHeight = 3;
+const int g_Width = 1200;
+const int g_Height = 600;
+const int windowOffsetWidth = 5;
+const int windowOffsetHeight = 10;
 const cv::Scalar selectedBlockColor = CV_RGB(0, 191, 255);
 const cv::Scalar black = CV_RGB(0, 0, 0);
 const cv::Scalar white = CV_RGB(255, 255, 255);
+const cv::Scalar defaultMenuColor = CV_RGB(230, 230, 250);
 
 enum Section
 {

@@ -9,6 +9,7 @@
 #include "shapes.h"
 #include "history.h"
 #include "image.h"
+#include "paint.h"
 
 class Window
 {
@@ -29,17 +30,20 @@ private:
 
 private:
     cv::Point startPos, endPos, initPos;
-    cv::Mat windowMat, temp;
+    cv::Mat windowMat, temp, menuMat, backgroundMat;
     int mouseX, mouseY;
 
     int g_prevSelectedShape = -1;
     cv::Scalar drawingColor;
     int thichLevel = 1;
 
+    bool selectedSelectBox = false;
+
     Menu* menu;
     Shapes* shapes;
     History* history;
     Image* image;
+    Paint* paint;
 };
 
 #endif

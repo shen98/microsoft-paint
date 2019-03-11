@@ -25,6 +25,7 @@ public:
     void drawEllipse(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness = 1);
     void drawRoundedRectangle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness = 1);
     void drawDottedLine(cv::Mat& m, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness = 1);
+    void drawDottedRectangle(cv::Mat& m, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness = 1);
     void changeColor(cv::Scalar color);
 private:
 };

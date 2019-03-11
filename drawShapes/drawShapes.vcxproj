@@ -150,6 +150,7 @@
     <ClInclude Include="history.h" />
     <ClInclude Include="image.h" />
     <ClInclude Include="menu.h" />
+    <ClInclude Include="paint.h" />
     <ClInclude Include="select.h" />
     <ClInclude Include="shapes.h" />
     <ClInclude Include="stdafx.h" />
@@ -163,6 +164,7 @@
     <ClCompile Include="history.cpp" />
     <ClCompile Include="image.cpp" />
     <ClCompile Include="menu.cpp" />
+    <ClCompile Include="paint.cpp" />
     <ClCompile Include="select.cpp" />
     <ClCompile Include="shapes.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -5,8 +5,6 @@
 #include <opencv2/opencv.hpp>
 #include "window.h"
 
-const int g_Width = 1200;
-const int g_Height = 600;
 
 int main(int argc, char** argv)
 {

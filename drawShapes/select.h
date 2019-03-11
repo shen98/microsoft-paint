@@ -16,7 +16,7 @@ public:
 
     void initialSelect(cv::Mat& m);
 
-
+    void selectSelectBox(cv::Mat& m, int mousePosX, int mousePosY);
 private:
     const int selectStartX = 100;
     const int selectBoxWidth = 50;

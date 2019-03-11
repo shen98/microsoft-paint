@@ -12,8 +12,10 @@ Menu::~Menu()
 
 }
 
-bool Menu::initialize()
+bool Menu::initialize(cv::Mat& m, int width)
 {
+    bool result;
+
     shapes = new Shapes();
     if (!shape)
     {
@@ -38,14 +40,16 @@ bool Menu::initialize()
         return false;
     }
 
-
+    initialMenu(m, width);
 
     return true;
 }
 
 void Menu::initialMenu(cv::Mat& m, int width)
 {
-    cv::rectangle(m, cv::Rect(cv::Point(0, 0), cv::Point(width, g_MenuHeight)), CV_RGB(230, 230, 250), -1);
+    m = cv::Mat(g_MenuHeight, width, CV_8UC3);
+    m = cv::Scalar::all(0);
+    cv::rectangle(m, cv::Rect(cv::Point(0, 0), cv::Point(width, g_MenuHeight)), defaultMenuColor, -1);
 
     cv::line(m, cv::Point(100, iconHeight + g_MenuOffsetHeight), cv::Point(100, g_MenuHeight - g_MenuOffsetHeight), CV_RGB(135, 206, 250));
     cv::line(m, cv::Point(250, iconHeight + g_MenuOffsetHeight), cv::Point(250, g_MenuHeight - g_MenuOffsetHeight), CV_RGB(135, 206, 250));
@@ -68,7 +72,8 @@ int Menu::getMouseClick(int mousePosX, int mousePosY)
     }
     else if (mousePosX > Section::image && mousePosX < tool)
     {
-        return -1;
+
+        return Buttons::selectBox;
     }
     else if (mousePosX > Section::tool && mousePosX < Section::brush)
     {
@@ -88,9 +93,10 @@ int Menu::getMouseClick(int mousePosX, int mousePosY)
     else if (mousePosX > Section::thick && mousePosX < Section::color) return Buttons::thickness;
     else if (mousePosX > Section::color)
     {
-        changeDisplayColorNum(mousePosX, mousePosY);
         return -1;
     }
+
+    return -1;
 }
 
 void Menu::initialShapes(cv::Mat& m)
@@ -168,9 +174,13 @@ cv::Scalar Menu::changeColor(cv::Mat& m, int mousePosX, int mousePosY)
     return temp;
 }
 
-void Menu::changeDisplayColorNum(int mousePosX, int mousePosY)
+cv::Scalar Menu::changeDisplayColorNum(cv::Mat& m, int mousePosX, int mousePosY)
 {
-    color->changeDisplayColorNum(mousePosX, mousePosY);
+    if (color->changeDisplayColorNum(mousePosX, mousePosY))
+    {
+        return color->selectedDisplayColor(m);
+    }
+    return cv::Scalar(-1, -1, -1);
 }
 
 void Menu::changeState(int num)

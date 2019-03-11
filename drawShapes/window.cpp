@@ -9,7 +9,7 @@ void my_mouse_calback(int event, int x, int y, int flags, void* param)
 
 Window::Window()
 {
-    drawingColor = CV_RGB(255, 255, 255);
+    drawingColor = black;
 }
 
 Window::~Window()
@@ -19,9 +19,7 @@ Window::~Window()
 
 bool Window::initialize(int height, int width)
 {
-    windowMat = cv::Mat(height, width, CV_8UC3);
-
-    windowMat = cv::Scalar::all(0);
+    backgroundMat = cv::Mat(height, width, CV_8UC3);
 
     bool result;
 
@@ -46,7 +44,7 @@ bool Window::initialize(int height, int width)
         return false;
     }
 
-    result = menu->initialize();
+    result = menu->initialize(menuMat, width);
     if (!result)
     {
         cout << "Fail to initialize menu." << endl;
@@ -65,17 +63,28 @@ bool Window::initialize(int height, int width)
         return false;
     }
 
-    menu->initialMenu(windowMat, width);
-
-
-    cv::Mat a;
-    windowMat.copyTo(a);
-    result = history->initialize(a);
-    if (!result)
+    paint = new Paint();
+    if (!paint)
     {
-        cout << "Fail to initialize history" << endl;
+        cout << "Cannot create paint object." << endl;
         return false;
     }
+
+    result = paint->initialize(windowMat, height - g_MenuHeight - 2 * windowOffsetHeight, width - 2 * windowOffsetWidth);
+    if (!result)
+    {
+        cout << "Cannot initialize paint." << endl;
+        return false;
+    }
+
+    //cv::Mat a;
+    //menuMat.copyTo(a);
+    //result = history->initialize(a);
+    //if (!result)
+    //{
+    //    cout << "Fail to initialize history" << endl;
+    //    return false;
+    //}
 
     result = initialWindow();
     if (!result)
@@ -96,10 +105,16 @@ bool Window::initialWindow()
 
     for (;;)
     {
-        windowMat.copyTo(temp);
+        menuMat.copyTo(backgroundMat(cv::Range(0, g_MenuHeight), cv::Range(0, g_Width)));
+        windowMat.copyTo(backgroundMat(cv::Range(g_MenuHeight + windowOffsetHeight, windowMat.rows + g_MenuHeight + windowOffsetHeight), cv::Range(windowOffsetWidth, windowMat.cols + windowOffsetWidth)));
+        backgroundMat.copyTo(temp);
         menu->selectShape(temp, mouseX, mouseY);
         menu->selectColor(temp, mouseX, mouseY);
-        if (menu->getButtonState()[Buttons::rectangle] && menu->startDrawing())
+        if (menu->getButtonState()[Buttons::selectBox] && menu->startDrawing())
+        {
+            if (endPos.x != 0 && endPos.y != 0) shapes->drawDottedRectangle(temp, startPos, endPos, drawingColor, thichLevel);
+        }
+        else if (menu->getButtonState()[Buttons::rectangle] && menu->startDrawing())
         {
             if (endPos.x != 0 && endPos.y != 0) shapes->drawBox(temp, startPos, endPos, drawingColor, thichLevel);
         }
@@ -147,10 +162,9 @@ bool Window::initialWindow()
             history->getNextHistory().copyTo(windowMat);
         }
 
-
         cv::imshow("1", temp);
 
-        int key = cv::waitKey(50);
+        int key = cv::waitKey(10);
         if (key == 27)      //Esc key
         {
             if (!menu->startDrawing()) break;
@@ -162,6 +176,13 @@ bool Window::initialWindow()
         {
             if (endPos.x != 0 && endPos.y != 0) shapes->drawPolygon(windowMat, endPos, initPos, drawingColor);
             addToHistory(windowMat);
+        }
+        else if (key == 13 && selectedSelectBox)
+        {
+            backgroundMat = cv::Mat(g_Height, g_Width, CV_8UC3);
+            paint->resize(windowMat, startPos, endPos, thichLevel);
+            endPos.x = 0; endPos.y = 0;
+            selectedSelectBox = false;
         }
     }
 
@@ -175,16 +196,22 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
     case cv::EVENT_MOUSEMOVE:
     {
         mouseX = x; mouseY = y;
-        if (y < menu->getMenuHeight() || !menu->startDrawing() || !menu->getSelectedFirst()) break;
+        if (y < menu->getMenuHeight() || !menu->startDrawing() || !menu->getSelectedFirst() || selectedSelectBox) break;
         endPos.x = x; endPos.y = y;
     }
     break;
     case cv::EVENT_LBUTTONDOWN:
     {
-        menu->changeDisplayColorNum(x, y);
-        if (menu->changeColor(windowMat, x, y) != cv::Scalar(-1, -1, -1))
+        cv::Scalar c = menu->changeDisplayColorNum(menuMat, x, y);
+        if (c != cv::Scalar(-1, -1, -1))
         {
-            drawingColor = menu->changeColor(windowMat, x, y);
+            drawingColor = c;
+            menu->changeState(g_prevSelectedShape);
+            break;
+        }
+        if (menu->changeColor(menuMat, x, y) != cv::Scalar(-1, -1, -1))
+        {
+            drawingColor = menu->changeColor(menuMat, x, y);
             menu->changeState(g_prevSelectedShape);
             break;
         }
@@ -206,6 +233,7 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
         }
         else if (y >= menu->getMenuHeight() && menu->startDrawing())
         {
+            cout << 1 << endl;
             if(menu->getButtonState()[Buttons::polygon] && (initPos.x == 0 && initPos.y == 0))
             {
                 initPos.x = x; initPos.y = y;
@@ -222,7 +250,7 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
             int button = menu->getMouseClick(x, y);
             if (button >= Buttons::rectangle && button <= Buttons::triangle)                    //add selected shape effect
             {
-                menu->selectedShape(windowMat, button);
+                menu->selectedShape(menuMat, button - Buttons::rectangle);
             }
             if(button != -1) menu->changeState(button);
             if (button >= Buttons::rectangle && button <= Buttons::polygon) g_prevSelectedShape = button;
@@ -236,6 +264,8 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
         if (y >= menu->getMenuHeight() && menu->startDrawing())
         {
             if(endPos.x == 0 && endPos.y == 0) break;
+            startPos = cv::Point(startPos.x - windowOffsetWidth, startPos.y - g_MenuHeight - windowOffsetHeight);
+            endPos = cv::Point(endPos.x - windowOffsetWidth, endPos.y - g_MenuHeight - windowOffsetHeight);
             if (menu->getButtonState()[Buttons::polygon])
             {
                 shapes->drawPolygon(windowMat, startPos, endPos, drawingColor, thichLevel);
@@ -248,10 +278,20 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
             else if (menu->getButtonState()[Buttons::ellipse]) shapes->drawEllipse(windowMat, startPos, endPos, drawingColor, thichLevel);
             else if (menu->getButtonState()[Buttons::roundedRectangle]) shapes->drawRoundedRectangle(windowMat, startPos, endPos, drawingColor, thichLevel);
             else if (menu->getButtonState()[Buttons::triangle]) shapes->drawRegularTriangle(windowMat, startPos, endPos, drawingColor, thichLevel);
+            else if (menu->getButtonState()[Buttons::selectBox])
+            {
+                shapes->drawDottedRectangle(windowMat, startPos, endPos, drawingColor, thichLevel);
+                selectedSelectBox = true;
+                menu->changeState(Buttons::cancel);
+                menu->changeDrawingState(false);
+                menu->changeSelectState(false);
+                break;
+            }
             cv::Mat a;
             windowMat.copyTo(a);
             addToHistory(a);
-            menu->changeDrawingState(false);
+            menu->changeState(g_prevSelectedShape);
+            //menu->changeDrawingState(false);
             menu->changeSelectState(false);
             endPos.x = 0; endPos.y = 0;
         }

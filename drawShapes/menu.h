@@ -14,7 +14,7 @@ using namespace std;
 
 enum Buttons
 {
-    rectangle, line, ellipse, roundedRectangle, triangle,
+    selectBox, rectangle, line, ellipse, roundedRectangle, triangle,
     polygon, thickness, colorOne, colorTwo, import, undo, redo, choose, cancel
 };
 
@@ -24,7 +24,7 @@ public:
     Menu();
     ~Menu();
 
-    bool initialize();
+    bool initialize(cv::Mat& m, int width);
 
     void initialMenu(cv::Mat& m, int width);                    //Initially draw the menu
 
@@ -40,7 +40,7 @@ public:
 
     void selectColor(cv::Mat& m, int mousePosX, int mousePosY);
     cv::Scalar changeColor(cv::Mat& m, int mousePosX, int mousePosY);
-    void changeDisplayColorNum(int mousePosX, int mousePosY);
+    cv::Scalar changeDisplayColorNum(cv::Mat& m, int mousePosX, int mousePosY);
 
     void changeState(int num);
 
