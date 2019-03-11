@@ -12,10 +12,8 @@ Menu::~Menu()
 
 }
 
-bool Menu::initialize(cv::Mat& m, int width)
+bool Menu::initialize()
 {
-    //initialMenu(m, width);
-
     shapes = new Shapes();
     if (!shape)
     {
@@ -34,10 +32,18 @@ bool Menu::initialize(cv::Mat& m, int width)
         return false;
     }
 
+    select = new Select();
+    if (!select)
+    {
+        return false;
+    }
+
+
+
     return true;
 }
 
-void Menu::initialMenu(cv::Mat& m, int width, cv::Scalar colorOne, cv::Scalar colorTwo, int thickLevel)
+void Menu::initialMenu(cv::Mat& m, int width)
 {
     cv::rectangle(m, cv::Rect(cv::Point(0, 0), cv::Point(width, g_MenuHeight)), CV_RGB(230, 230, 250), -1);
 
@@ -50,15 +56,8 @@ void Menu::initialMenu(cv::Mat& m, int width, cv::Scalar colorOne, cv::Scalar co
 
     initialShapes(m);
     thickness->initialThickness(m);
-    color->initializeColor(m, colorOne, colorTwo);
-    /*for (int i = 0; i < g_ButtonNum; ++i)
-    {
-        string fileName = "buttons/" + g_buttonName[i] + ".png";
-        cv::Mat img = cv::imread(fileName);
-        cv::resize(img, img, cv::Size(g_ButtonSize, g_ButtonSize));
-        img.copyTo(m(cv::Range(g_MenuOffset, g_MenuOffset + g_ButtonSize),
-            cv::Range(g_MenuOffset * (i + 1) + g_ButtonSize * i, g_MenuOffset * (i + 1) + g_ButtonSize * (i + 1))));
-    }*/
+    color->initializeColor(m);
+    select->initialSelect(m);
 }
 
 int Menu::getMouseClick(int mousePosX, int mousePosY)
@@ -69,7 +68,7 @@ int Menu::getMouseClick(int mousePosX, int mousePosY)
     }
     else if (mousePosX > Section::image && mousePosX < tool)
     {
-
+        return -1;
     }
     else if (mousePosX > Section::tool && mousePosX < Section::brush)
     {
@@ -87,6 +86,11 @@ int Menu::getMouseClick(int mousePosX, int mousePosY)
         else return Buttons::rectangle + index;
     }
     else if (mousePosX > Section::thick && mousePosX < Section::color) return Buttons::thickness;
+    else if (mousePosX > Section::color)
+    {
+        changeDisplayColorNum(mousePosX, mousePosY);
+        return -1;
+    }
 }
 
 void Menu::initialShapes(cv::Mat& m)
@@ -157,9 +161,16 @@ void Menu::selectColor(cv::Mat& m, int mousePosX, int mousePosY)
     color->selectDisplayColor(m, mousePosX, mousePosY);
 }
 
-cv::Scalar Menu::changeColor(int mousePosX, int mousePosY)
+cv::Scalar Menu::changeColor(cv::Mat& m, int mousePosX, int mousePosY)
 {
-    return color->changeDrawingColor( mousePosX, mousePosY);
+    cv::Scalar temp = color->changeDrawingColor(mousePosX, mousePosY);
+    if (temp != cv::Scalar(-1, -1, -1)) color->changeDisplayColor(m, temp);
+    return temp;
+}
+
+void Menu::changeDisplayColorNum(int mousePosX, int mousePosY)
+{
+    color->changeDisplayColorNum(mousePosX, mousePosY);
 }
 
 void Menu::changeState(int num)
@@ -193,7 +204,6 @@ void Menu::changeSelectState(bool state)
 {
     selectedFirst = state;
 }
-
 
 bool Menu::getSelectThickness()
 {

@@ -7,12 +7,8 @@ void my_mouse_calback(int event, int x, int y, int flags, void* param)
     w->onMouse(event, x, y, flags, param);
 }
 
-Window::Window(int height, int width)
+Window::Window()
 {
-    g_Width = width;
-    g_Height = height;
-    colorOne = CV_RGB(255, 255, 255);
-    colorTwo = CV_RGB(255, 255, 255);
     drawingColor = CV_RGB(255, 255, 255);
 }
 
@@ -21,9 +17,12 @@ Window::~Window()
     cv::destroyAllWindows();
 }
 
-bool Window::initialize()
+bool Window::initialize(int height, int width)
 {
-    windowMat = cv::Mat(g_Height, g_Width, CV_8UC3);
+    windowMat = cv::Mat(height, width, CV_8UC3);
+
+    windowMat = cv::Scalar::all(0);
+
     bool result;
 
     history = new History();
@@ -47,7 +46,7 @@ bool Window::initialize()
         return false;
     }
 
-    result = menu->initialize(windowMat,g_Width);
+    result = menu->initialize();
     if (!result)
     {
         cout << "Fail to initialize menu." << endl;
@@ -66,6 +65,18 @@ bool Window::initialize()
         return false;
     }
 
+    menu->initialMenu(windowMat, width);
+
+
+    cv::Mat a;
+    windowMat.copyTo(a);
+    result = history->initialize(a);
+    if (!result)
+    {
+        cout << "Fail to initialize history" << endl;
+        return false;
+    }
+
     result = initialWindow();
     if (!result)
     {
@@ -79,23 +90,9 @@ bool Window::initialize()
 
 bool Window::initialWindow()
 {
-    windowMat.copyTo(temp);
-
-    windowMat = cv::Scalar::all(0);
-
     cv::namedWindow("1");
     cv::moveWindow("1", 20, 20);
     cv::setMouseCallback("1", my_mouse_calback, this);
-
-    menu->initialMenu(windowMat, g_Width, drawingColor, colorTwo, thichLevel);
-    cv::Mat a;
-    windowMat.copyTo(a);
-    bool result = history->initialize(a);
-    if (!result)
-    {
-        cout << "Fail to initialize history" << endl;
-        return false;
-    }
 
     for (;;)
     {
@@ -153,7 +150,7 @@ bool Window::initialWindow()
 
         cv::imshow("1", temp);
 
-        int key = cv::waitKey(5);
+        int key = cv::waitKey(50);
         if (key == 27)      //Esc key
         {
             if (!menu->startDrawing()) break;
@@ -184,15 +181,16 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
     break;
     case cv::EVENT_LBUTTONDOWN:
     {
-        if (menu->changeColor(x, y) != cv::Scalar(-1, -1, -1))
+        menu->changeDisplayColorNum(x, y);
+        if (menu->changeColor(windowMat, x, y) != cv::Scalar(-1, -1, -1))
         {
-            drawingColor = menu->changeColor(x, y);
+            drawingColor = menu->changeColor(windowMat, x, y);
+            menu->changeState(g_prevSelectedShape);
             break;
         }
         if (menu->getSelectThickness())
         {
             int thick = menu->changeThickness(x, y);
-            cout << thick << endl;
             if (thick == -1) break;
             else
             {

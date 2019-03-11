@@ -4,13 +4,12 @@
 
 #include <opencv2/opencv.hpp>
 #include <string>
-#include <vector>
 #include <iostream>
 
 #include "shapes.h"
 #include "thickness.h"
 #include "color.h"
-#include "data.h"
+#include "select.h"
 using namespace std;
 
 enum Buttons
@@ -19,20 +18,20 @@ enum Buttons
     polygon, thickness, colorOne, colorTwo, import, undo, redo, choose, cancel
 };
 
-
-
 class Menu
 {
 public:
     Menu();
     ~Menu();
 
-    bool initialize(cv::Mat& m, int width);
+    bool initialize();
 
-    void initialMenu(cv::Mat& m, int width, cv::Scalar colorOne, cv::Scalar colorTwo, int thickLevel);
+    void initialMenu(cv::Mat& m, int width);                    //Initially draw the menu
+
     int getMouseClick(int mousePosX, int mousePosY);
 
     void initialShapes(cv::Mat& m);
+
     void selectShape(cv::Mat& m, int mousePosX, int mousePosY);
     void selectedShape(cv::Mat& m, int index);
 
@@ -40,7 +39,8 @@ public:
     int changeThickness(int mousePosX, int mousePosY);
 
     void selectColor(cv::Mat& m, int mousePosX, int mousePosY);
-    cv::Scalar changeColor(int mousePosX, int mousePosY);
+    cv::Scalar changeColor(cv::Mat& m, int mousePosX, int mousePosY);
+    void changeDisplayColorNum(int mousePosX, int mousePosY);
 
     void changeState(int num);
 
@@ -66,13 +66,13 @@ private:
     int thickLevel = 1;
 
     vector<bool> g_buttonState;
-    //vector<string> g_buttonName = { "square", "circle", "triangle", "polygon", "import" "undo", "redo", "choose", "f", "cancel" };
 
-    Shapes* shapes;
     cv::Scalar defaultShapeColor = CV_RGB(30, 144, 255);
 
+    Shapes* shapes;
     Thickness* thickness;
     Color* color;
+    Select* select;
 };
 
 #endif

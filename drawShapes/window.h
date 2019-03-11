@@ -13,29 +13,27 @@
 class Window
 {
 public:
-    Window(int width, int height);
+    Window();
     ~Window();
 
-    bool initialize();
-
+    bool initialize(int height, int width);
     void onMouse(int event, int x, int y, int flags, void* param);
+
+private:
     bool initialWindow();
     void initPoints();
+
     wstring selectFile();
 
     void addToHistory(cv::Mat m);
 
 private:
-    int g_Width;
-    int g_Height;
     cv::Point startPos, endPos, initPos;
     cv::Mat windowMat, temp;
     int mouseX, mouseY;
 
     int g_prevSelectedShape = -1;
-
-    cv::Scalar colorOne, colorTwo, drawingColor;
-
+    cv::Scalar drawingColor;
     int thichLevel = 1;
 
     Menu* menu;

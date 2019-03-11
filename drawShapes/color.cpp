@@ -22,7 +22,7 @@ bool Color::initialize()
     return true;
 }
 
-void Color::initializeColor(cv::Mat& m, cv::Scalar colorOne, cv::Scalar colorTwo)
+void Color::initializeColor(cv::Mat& m)
 {
     int startX = colorStartX + firstColorOffsetWidth + g_MenuOffsetWidth;
     int startY = iconHeight + g_MenuOffsetHeight;
@@ -30,14 +30,14 @@ void Color::initializeColor(cv::Mat& m, cv::Scalar colorOne, cv::Scalar colorTwo
         cv::Point(startX + firstColorWidth, startY + firstColorOffsetHeight + firstColorHeight), black);
 
     shape->drawBox(m, cv::Point(startX + colorOffset, startY + firstColorOffsetHeight + colorOffset),
-        cv::Point(startX + firstColorWidth - colorOffset, startY + firstColorOffsetHeight + firstColorHeight - colorOffset), colorOne, -1);
+        cv::Point(startX + firstColorWidth - colorOffset, startY + firstColorOffsetHeight + firstColorHeight - colorOffset), white, -1);
 
     startX += firstColorWidth + firstColorOffsetWidth + secondColorOffsetWidth;
     shape->drawBox(m, cv::Point(startX, startY + secondColorOffsetHeight),
         cv::Point(startX + secondColorWidth, startY + secondColorWidth + secondColorOffsetHeight), black);
 
     shape->drawBox(m, cv::Point(startX + colorOffset, startY + secondColorOffsetHeight + colorOffset),
-        cv::Point(startX + secondColorWidth - colorOffset, startY + secondColorWidth + secondColorOffsetHeight - colorOffset), colorTwo, -1);
+        cv::Point(startX + secondColorWidth - colorOffset, startY + secondColorWidth + secondColorOffsetHeight - colorOffset), white, -1);
 
     startX += secondColorWidth + secondColorOffsetWidth + colorOffset;
     for (int i = 0; i < numOfColorRow; i++)
@@ -55,22 +55,7 @@ void Color::initializeColor(cv::Mat& m, cv::Scalar colorOne, cv::Scalar colorTwo
         }
     }
 
-
-    if (selectedColorNum == 0) return;
-    else
-    {
-        cv::Mat temp;
-        m.copyTo(temp);
-        int startX = colorStartX + g_MenuOffsetWidth + (selectedColorNum - 1) * (firstColorOffsetWidth * 2 + firstColorWidth);
-        int startY = iconHeight + g_MenuOffsetHeight;
-
-        shape->drawBox(temp, cv::Point(startX, startY),
-            cv::Point(startX + firstColorOffsetWidth * 2 + firstColorWidth, startY + ColorDisplayHeight), selectedBlockColor, -1);
-
-        double alpha = 0.3;
-        cv::addWeighted(temp, alpha, m, 1.0 - alpha, 0.0, m);
-    }
-
+    
 }
 
 void Color::selectColor(cv::Mat& m, int mousePosX, int mousePosY)
@@ -89,9 +74,6 @@ void Color::selectColor(cv::Mat& m, int mousePosX, int mousePosY)
 
 void Color::selectDisplayColor(cv::Mat& m, int mousePosX, int mousePosY)
 {
-    int initStartX = colorStartX + g_MenuOffsetWidth;
-    int initStartY = iconHeight + g_MenuOffsetHeight;
-
     if (mousePosX < initStartX || mousePosX > initStartX + firstColorOffsetWidth * 2 + firstColorWidth + secondColorOffsetWidth * 2 + secondColorWidth
         || mousePosY < initStartY || mousePosY > initStartY + ColorDisplayHeight) return;
 
@@ -102,17 +84,28 @@ void Color::selectDisplayColor(cv::Mat& m, int mousePosX, int mousePosY)
     }
     else
     {
-        initStartX += firstColorOffsetWidth * 2 + firstColorWidth;
-        shape->drawBox(m, cv::Point(initStartX, initStartY),
-            cv::Point(initStartX + secondColorOffsetWidth * 2 + secondColorWidth, initStartY + ColorDisplayHeight), CV_RGB(135, 206, 250));
+        shape->drawBox(m, cv::Point(initStartX + firstColorOffsetWidth * 2 + firstColorWidth, initStartY),
+            cv::Point(initStartX + firstColorOffsetWidth * 2 + firstColorWidth + secondColorOffsetWidth * 2 + secondColorWidth, initStartY + ColorDisplayHeight), CV_RGB(135, 206, 250));
+    }
+
+    if (selectedColorNum == 0) return;
+    else
+    {
+        cv::Mat temp;
+        m.copyTo(temp);
+        int startX = colorStartX + g_MenuOffsetWidth + (selectedColorNum - 1) * (firstColorOffsetWidth * 2 + firstColorWidth);
+        int startY = iconHeight + g_MenuOffsetHeight;
+
+        shape->drawBox(temp, cv::Point(startX, startY),
+            cv::Point(startX + firstColorOffsetWidth * 2 + firstColorWidth, startY + ColorDisplayHeight), selectedBlockColor, -1);
+
+        double alpha = 0.3;
+        cv::addWeighted(temp, alpha, m, 1.0 - alpha, 0.0, m);
     }
 }
 
 void Color::changeDisplayColorNum(int mousePosX, int mousePosY)
 {
-    int initStartX = colorStartX + g_MenuOffsetWidth;
-    int initStartY = iconHeight + g_MenuOffsetHeight;
-
     if (mousePosX < initStartX || mousePosX > initStartX + firstColorOffsetWidth * 2 + firstColorWidth + secondColorOffsetWidth * 2 + secondColorWidth
         || mousePosY < initStartY || mousePosY > initStartY + ColorDisplayHeight) return;
 
@@ -131,6 +124,20 @@ cv::Scalar Color::changeDrawingColor(int mousePosX, int mousePosY)
     int index = (mousePosX - startX) / (colorBlockSize + colorBlockOffset) + (mousePosY - startY) / (colorBlockSize + colorBlockOffset) * numOfColorCol;
 
     if (index < colorBlockColor.size()) return colorBlockColor[index];
-    else return CV_RGB(255, 255, 255);
+    else return white;
+}
+
+void Color::changeDisplayColor(cv::Mat& m, cv::Scalar color)
+{
+    if (selectedColorNum == 1)
+    {
+        shape->drawBox(m, cv::Point(initStartX + firstColorOffsetWidth + colorOffset, initStartY + firstColorOffsetHeight + colorOffset),
+            cv::Point(initStartX + firstColorOffsetWidth + firstColorWidth - colorOffset, initStartY + firstColorOffsetHeight + firstColorHeight - colorOffset), color, -1);
+    }
+    else
+    {
+        shape->drawBox(m, cv::Point(initStartX + firstColorOffsetWidth * 2 + colorOffset + firstColorWidth + secondColorOffsetWidth, initStartY + secondColorOffsetHeight + colorOffset),
+            cv::Point(initStartX + firstColorOffsetWidth * 2 + firstColorWidth  + secondColorWidth + secondColorOffsetWidth - colorOffset, initStartY + secondColorHeight + secondColorOffsetHeight - colorOffset), color, -1);
+    }
 }
 

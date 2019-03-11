@@ -14,6 +14,8 @@ const int shapeButtonHeight = 16;
 const int shapeOffsetWidth = 2;
 const int shapeOffsetHeight = 3;
 const cv::Scalar selectedBlockColor = CV_RGB(0, 191, 255);
+const cv::Scalar black = CV_RGB(0, 0, 0);
+const cv::Scalar white = CV_RGB(255, 255, 255);
 
 enum Section
 {
@@ -23,5 +25,6 @@ enum Section
     brush = 320,
     shape = 380,
     thick = 600,
-    color = 660
+    color = 660,
+    other = 1058
 };

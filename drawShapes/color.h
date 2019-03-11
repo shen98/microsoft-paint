@@ -15,7 +15,7 @@ public:
 
     bool initialize();
 
-    void initializeColor(cv::Mat& m, cv::Scalar colorOne, cv::Scalar colorTwo);
+    void initializeColor(cv::Mat& m);
 
     void selectColor(cv::Mat& m, int mousePosX, int mousePosY);
 
@@ -24,6 +24,8 @@ public:
     void changeDisplayColorNum(int mousePosX, int mousePosY);               //select color one or color two
 
     cv::Scalar changeDrawingColor(int mousePosX, int mousePosY);           //change drawing color
+
+    void changeDisplayColor(cv::Mat& m, cv::Scalar color);
 private:
     const int colorOffset = 2;
     const int firstColorOffsetWidth = 5;
@@ -40,13 +42,16 @@ private:
     const int colorBlockSize = 18;
     const int colorBlockOffset = 4;
     const int colorStartX = 660;
+    const int initStartX = colorStartX + g_MenuOffsetWidth;
+    const int initStartY = iconHeight + g_MenuOffsetHeight;
 
     vector<cv::Scalar> colorBlockColor = { CV_RGB(0,0,0), CV_RGB(128,128,128), CV_RGB(139,0,0),
-        CV_RGB(255,0,0), CV_RGB(255,69,0), CV_RGB(255,255,0), CV_RGB(0,128,0) };
+        CV_RGB(255,0,0), CV_RGB(255,69,0), CV_RGB(255,255,0), CV_RGB(0,128,0), CV_RGB(173,216,230), CV_RGB(30,144,255) };
 
     int selectedColorNum = 1;
 
     cv::Scalar black = CV_RGB(0, 0, 0);
+    cv::Scalar white = CV_RGB(255,255,255);
     Shapes* shape;
 };
 

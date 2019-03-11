@@ -150,6 +150,7 @@
     <ClInclude Include="history.h" />
     <ClInclude Include="image.h" />
     <ClInclude Include="menu.h" />
+    <ClInclude Include="select.h" />
     <ClInclude Include="shapes.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -162,6 +163,7 @@
     <ClCompile Include="history.cpp" />
     <ClCompile Include="image.cpp" />
     <ClCompile Include="menu.cpp" />
+    <ClCompile Include="select.cpp" />
     <ClCompile Include="shapes.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
