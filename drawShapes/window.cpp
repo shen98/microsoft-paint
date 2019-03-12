@@ -291,7 +291,6 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
             windowMat.copyTo(a);
             addToHistory(a);
             menu->changeState(g_prevSelectedShape);
-            //menu->changeDrawingState(false);
             menu->changeSelectState(false);
             endPos.x = 0; endPos.y = 0;
         }
