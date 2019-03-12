@@ -40,6 +40,13 @@ bool Menu::initialize(cv::Mat& m, int width)
         return false;
     }
 
+    brush = new Brush();
+    if (!brush)
+    {
+        cout << "Cannot create brush object." << endl;
+        return false;
+    }
+
     initialMenu(m, width);
 
     return true;
@@ -81,7 +88,7 @@ int Menu::getMouseClick(int mousePosX, int mousePosY)
     }
     else if (mousePosX > Section::brush && mousePosX < Section::shape)
     {
-
+        return Buttons::normalBrush;
     }
     else if (mousePosX > Section::shape && mousePosX < Section::thick)
     {
@@ -213,6 +220,11 @@ bool Menu::getSelectedFirst()
 void Menu::changeSelectState(bool state)
 {
     selectedFirst = state;
+}
+
+void Menu::drawWithBrush(cv::Mat& m, cv::Point startPos, cv::Point endPos, int type, cv::Scalar color, int thickness)
+{
+    brush->drawWithBrush(m, startPos, endPos, type, color, thickness);
 }
 
 bool Menu::getSelectThickness()

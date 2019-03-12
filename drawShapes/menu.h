@@ -10,11 +10,12 @@
 #include "thickness.h"
 #include "color.h"
 #include "select.h"
+#include "brush.h"
 using namespace std;
 
 enum Buttons
 {
-    selectBox, rectangle, line, ellipse, roundedRectangle, triangle,
+    selectBox, normalBrush, rectangle, line, ellipse, roundedRectangle, triangle,
     polygon, thickness, colorOne, colorTwo, import, undo, redo, choose, cancel
 };
 
@@ -50,6 +51,8 @@ public:
     bool getSelectedFirst();
     void changeSelectState(bool state);
 
+    void drawWithBrush(cv::Mat& m, cv::Point startPos, cv::Point endPos, int type, cv::Scalar color, int thickness = 1);
+
     bool getSelectThickness();
     void changeSelectThickness(bool state);
     int getMenuHeight();
@@ -73,6 +76,7 @@ private:
     Thickness* thickness;
     Color* color;
     Select* select;
+    Brush* brush;
 };
 
 #endif

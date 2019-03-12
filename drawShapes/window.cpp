@@ -195,6 +195,11 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
     {
     case cv::EVENT_MOUSEMOVE:
     {
+        if (menu->getButtonState()[Buttons::normalBrush] && drawWithBrush)
+        {
+            menu->drawWithBrush(windowMat, startPos, cv::Point(x, y), 1, drawingColor, thichLevel);
+            startPos.x = x; startPos.y = y;
+        }
         mouseX = x; mouseY = y;
         if (y < menu->getMenuHeight() || !menu->startDrawing() || !menu->getSelectedFirst() || selectedSelectBox) break;
         endPos.x = x; endPos.y = y;
@@ -209,13 +214,13 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
             menu->changeState(g_prevSelectedShape);
             break;
         }
-        if (menu->changeColor(menuMat, x, y) != cv::Scalar(-1, -1, -1))
+        else if (menu->changeColor(menuMat, x, y) != cv::Scalar(-1, -1, -1))
         {
             drawingColor = menu->changeColor(menuMat, x, y);
             menu->changeState(g_prevSelectedShape);
             break;
         }
-        if (menu->getSelectThickness())
+        else if (menu->getSelectThickness())
         {
             int thick = menu->changeThickness(x, y);
             if (thick == -1) break;
@@ -233,7 +238,12 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
         }
         else if (y >= menu->getMenuHeight() && menu->startDrawing())
         {
-            cout << 1 << endl;
+            if (menu->getButtonState()[Buttons::normalBrush])
+            {
+                drawWithBrush = true;
+                startPos.x = x; startPos.y = y;
+                break;
+            }
             if(menu->getButtonState()[Buttons::polygon] && (initPos.x == 0 && initPos.y == 0))
             {
                 initPos.x = x; initPos.y = y;
@@ -253,17 +263,22 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
                 menu->selectedShape(menuMat, button - Buttons::rectangle);
             }
             if(button != -1) menu->changeState(button);
-            if (button >= Buttons::rectangle && button <= Buttons::polygon) g_prevSelectedShape = button;
+            if (button >= Buttons::normalBrush && button <= Buttons::polygon) g_prevSelectedShape = button;
             if (button == Buttons::thickness) menu->changeSelectThickness(true);
         }
-
     }
     break;
     case cv::EVENT_LBUTTONUP:
     {
+        if (drawWithBrush)
+        {
+            drawWithBrush = !drawWithBrush;
+            break;
+        }
         if (y >= menu->getMenuHeight() && menu->startDrawing())
         {
             if(endPos.x == 0 && endPos.y == 0) break;
+
             startPos = cv::Point(startPos.x - windowOffsetWidth, startPos.y - g_MenuHeight - windowOffsetHeight);
             endPos = cv::Point(endPos.x - windowOffsetWidth, endPos.y - g_MenuHeight - windowOffsetHeight);
             if (menu->getButtonState()[Buttons::polygon])

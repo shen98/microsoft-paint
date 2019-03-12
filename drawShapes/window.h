@@ -38,6 +38,7 @@ private:
     int thichLevel = 1;
 
     bool selectedSelectBox = false;
+    bool drawWithBrush = false;
 
     Menu* menu;
     Shapes* shapes;
