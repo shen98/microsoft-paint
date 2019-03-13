@@ -161,6 +161,10 @@ bool Window::initialWindow()
             menu->changeState(Buttons::cancel);
             history->getNextHistory().copyTo(windowMat);
         }
+        else if (menu->getButtonState()[Buttons::selectBrush])
+        {
+            menu->selectBrush(temp, mouseX, mouseY);
+        }
 
         cv::imshow("1", temp);
 
@@ -195,9 +199,9 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
     {
     case cv::EVENT_MOUSEMOVE:
     {
-        if (menu->getButtonState()[Buttons::normalBrush] && drawWithBrush)
+        if (startDrawWithBrush)
         {
-            menu->drawWithBrush(windowMat, startPos, cv::Point(x, y), 1, drawingColor, thichLevel);
+            menu->drawWithBrush(windowMat, startPos, cv::Point(x, y), brushType, drawingColor, thichLevel);
             startPos.x = x; startPos.y = y;
         }
         mouseX = x; mouseY = y;
@@ -236,12 +240,25 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
             }
             else menu->changeState(Buttons::cancel);
         }
+        else if (menu->getSelectBrush() && !drawWithBrush)
+        {
+            int type = menu->changeBrush(x, y);
+            if (type != -1)
+            {
+                brushType = type;
+                drawWithBrush = true;
+            }
+            menu->changeState(Buttons::cancel);
+            menu->changeDrawingState(true);
+            menu->changeSelectBrush(false);
+            break;
+        }
         else if (y >= menu->getMenuHeight() && menu->startDrawing())
         {
-            if (menu->getButtonState()[Buttons::normalBrush])
+            if (drawWithBrush)
             {
-                drawWithBrush = true;
                 startPos.x = x; startPos.y = y;
+                startDrawWithBrush = true;
                 break;
             }
             if(menu->getButtonState()[Buttons::polygon] && (initPos.x == 0 && initPos.y == 0))
@@ -265,14 +282,15 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
             if(button != -1) menu->changeState(button);
             if (button >= Buttons::normalBrush && button <= Buttons::polygon) g_prevSelectedShape = button;
             if (button == Buttons::thickness) menu->changeSelectThickness(true);
+            else if (button == Buttons::selectBrush) menu->changeSelectBrush(true);
         }
     }
     break;
     case cv::EVENT_LBUTTONUP:
     {
-        if (drawWithBrush)
+        if (startDrawWithBrush)
         {
-            drawWithBrush = !drawWithBrush;
+            startDrawWithBrush = !startDrawWithBrush;
             break;
         }
         if (y >= menu->getMenuHeight() && menu->startDrawing())

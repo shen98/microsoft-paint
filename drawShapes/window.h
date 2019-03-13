@@ -36,9 +36,11 @@ private:
     int g_prevSelectedShape = -1;
     cv::Scalar drawingColor;
     int thichLevel = 1;
+    int brushType = -1;
 
     bool selectedSelectBox = false;
     bool drawWithBrush = false;
+    bool startDrawWithBrush = false;
 
     Menu* menu;
     Shapes* shapes;

@@ -15,7 +15,7 @@ using namespace std;
 
 enum Buttons
 {
-    selectBox, normalBrush, rectangle, line, ellipse, roundedRectangle, triangle,
+    selectBox, selectBrush, normalBrush, rectangle, line, ellipse, roundedRectangle, triangle,
     polygon, thickness, colorOne, colorTwo, import, undo, redo, choose, cancel
 };
 
@@ -43,6 +43,9 @@ public:
     cv::Scalar changeColor(cv::Mat& m, int mousePosX, int mousePosY);
     cv::Scalar changeDisplayColorNum(cv::Mat& m, int mousePosX, int mousePosY);
 
+    void selectBrush(cv::Mat& m, int mousePosX, int mousePosY);
+    int changeBrush(int mousePosX, int mousePosY);
+
     void changeState(int num);
 
     bool startDrawing();
@@ -55,6 +58,10 @@ public:
 
     bool getSelectThickness();
     void changeSelectThickness(bool state);
+
+    bool getSelectBrush();
+    void changeSelectBrush(bool state);
+
     int getMenuHeight();
 
     vector<bool> getButtonState();
@@ -65,6 +72,7 @@ private:
     bool selectedFirst = false;
     bool g_selectedShape = false;
     bool g_selectThickness = false;
+    bool g_selectBrush = false;
 
     int thickLevel = 1;
 

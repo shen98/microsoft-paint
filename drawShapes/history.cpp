@@ -9,13 +9,12 @@ History::History()
 
 History::~History()
 {
-
+    
 }
 
 bool History::initialize(cv::Mat m)
 {
     history.push_back(m);
-
     return true;
 }
 

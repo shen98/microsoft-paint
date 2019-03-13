@@ -69,6 +69,7 @@ void Menu::initialMenu(cv::Mat& m, int width)
     thickness->initialThickness(m);
     color->initializeColor(m);
     select->initialSelect(m);
+    brush->initializeBrush(m);
 }
 
 int Menu::getMouseClick(int mousePosX, int mousePosY)
@@ -79,16 +80,15 @@ int Menu::getMouseClick(int mousePosX, int mousePosY)
     }
     else if (mousePosX > Section::image && mousePosX < tool)
     {
-
         return Buttons::selectBox;
     }
     else if (mousePosX > Section::tool && mousePosX < Section::brush)
     {
-
+        return Buttons::selectBrush;
     }
     else if (mousePosX > Section::brush && mousePosX < Section::shape)
     {
-        return Buttons::normalBrush;
+
     }
     else if (mousePosX > Section::shape && mousePosX < Section::thick)
     {
@@ -111,7 +111,7 @@ void Menu::initialShapes(cv::Mat& m)
     int startX = 380 + g_MenuOffsetWidth, startY = iconHeight + g_MenuOffsetHeight;
     cv::rectangle(m, cv::Rect(cv::Point(startX, startY),
         cv::Point(startX + (shapeButtonWidth + shapeOffsetWidth * 2) * 7, startY + 3 * (shapeButtonHeight + shapeOffsetHeight * 2))), CV_RGB(255,255,255), -1);
-    cv::putText(m, "Shapes", cv::Point(480 - 2.5 * textSize, g_MenuHeight - g_MenuOffsetHeight - textSize), cv::FONT_HERSHEY_TRIPLEX, 0.5, CV_RGB(0, 0, 0));
+    cv::putText(m, "Shapes", cv::Point(480 - 2.5 * textSize, g_MenuHeight - g_MenuOffsetHeight - textSize), cv::FONT_HERSHEY_TRIPLEX, 0.5, black, 1, cv::LINE_AA);
 
     shapes->drawBox(m, cv::Point(startX + shapeOffsetWidth, startY + shapeOffsetHeight), 
         cv::Point(startX + shapeButtonWidth + shapeOffsetWidth - 1, startY + shapeOffsetHeight + shapeButtonHeight - 1), defaultShapeColor);
@@ -125,8 +125,6 @@ void Menu::initialShapes(cv::Mat& m)
         cv::Point(startX + shapeButtonWidth * 4 + shapeOffsetWidth * 9, startY + shapeOffsetHeight + shapeButtonWidth - 5), defaultShapeColor);
 
 }
-
-
 
 void Menu::selectShape(cv::Mat& m, int mousePosX, int mousePosY)
 {
@@ -190,6 +188,16 @@ cv::Scalar Menu::changeDisplayColorNum(cv::Mat& m, int mousePosX, int mousePosY)
     return cv::Scalar(-1, -1, -1);
 }
 
+void Menu::selectBrush(cv::Mat& m, int mousePosX, int mousePosY)
+{
+    brush->selectBrush(m, mousePosX, mousePosY);
+}
+
+int Menu::changeBrush(int mousePosX, int mousePosY)
+{
+    return brush->changeBrushType(mousePosX, mousePosY);
+}
+
 void Menu::changeState(int num)
 {
     for (int i = 0; i < g_ButtonNum; ++i)
@@ -235,6 +243,16 @@ bool Menu::getSelectThickness()
 void Menu::changeSelectThickness(bool state)
 {
     g_selectThickness = state;
+}
+
+bool Menu::getSelectBrush()
+{
+    return g_selectBrush;
+}
+
+void Menu::changeSelectBrush(bool state)
+{
+    g_selectBrush = true;
 }
 
 int Menu::getMenuHeight()
