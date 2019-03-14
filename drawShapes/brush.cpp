@@ -19,6 +19,8 @@ bool Brush::initialize(cv::Mat& m)
         return false;
     }
 
+    srand(static_cast <unsigned> (time(NULL)));
+
     return true;
 }
 
@@ -26,14 +28,7 @@ bool Brush::initializeBrush(cv::Mat& m)
 {
     cv::putText(m, "Type:", cv::Point(brushStartX + brushOffsetWidth, brushStartY + brushOffsetHeight), cv::FONT_HERSHEY_SIMPLEX, 0.5, black, 1, cv::LINE_AA);
 
-    shapes->drawBox(m, cv::Point(brushStartX + brushOffsetWidth, brushStartY + brushOffsetHeight * 2 + brushTextHeight),
-        cv::Point(brushStartX + brushOffsetWidth + brushRectWidth, brushStartY + brushOffsetHeight * 2 + brushTextHeight + brushRectHeight), white, -1);
-
-    shapes->drawBox(m, cv::Point(brushStartX + brushOffsetWidth, brushStartY + brushOffsetHeight * 2 + brushTextHeight),
-        cv::Point(brushStartX + brushOffsetWidth + brushRectWidth, brushStartY + brushOffsetHeight * 2 + brushTextHeight + brushRectHeight), black, 1);
-
-    cv::putText(m, brushName[brushType], cv::Point(brushStartX + brushOffsetWidth + brushTextOffsetWidth, 
-        brushStartY + brushOffsetHeight * 2 + brushTextHeight + brushTextOffsetHeight + brushRectHeight / 2), cv::FONT_HERSHEY_SIMPLEX, 0.3, black, 1, cv::LINE_AA);
+    updateBrushType(m, 0);
 
     return true;
 }
@@ -57,6 +52,24 @@ void Brush::drawWithBrush(cv::Mat& m, cv::Point startPos, cv::Point endPos, int 
         p2.y = endPos.y + 1.5 * height * cos;
 
         shapes->drawBox(m, p1, p2, color, thickness);
+    }
+    else if (type == 2)
+    {
+        int i = 0;
+        while (i++ < 10)
+        {
+            float x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (thickness * 50))) - 25 * thickness;
+            float y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (thickness * 50))) - 25 * thickness;
+            float r = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (thickness * 2)));
+
+            cv::Point p1, p2;
+            p1.x = startPos.x + x;
+            p1.y = startPos.y + y;
+            p2.x = p1.x;
+            p2.y = p1.y - r;
+
+            shapes->drawCircle(m, p1, p2, color, -1);
+        }
     }
 }
 
@@ -84,13 +97,28 @@ void Brush::selectBrush(cv::Mat& m, int mousePosX, int mousePosY)
 }
 
 
-int Brush::changeBrushType(int mousePosX, int mousePosY)
+int Brush::changeBrushType(cv::Mat& m, int mousePosX, int mousePosY)
 {
     int startY = brushStartY + brushOffsetHeight * 2 + brushTextHeight + brushRectHeight + 1;
 
     if (mousePosX < brushStartX + brushOffsetWidth || mousePosX > brushStartX + brushOffsetWidth + brushRectWidth ||
         mousePosY < startY || mousePosY > startY + brushPopUpHeight) return -1;
 
+    brushType = (mousePosY - startY) / brushRectHeight;
+    updateBrushType(m, brushType);
+
     return (mousePosY - startY) / brushRectHeight;
+}
+
+void Brush::updateBrushType(cv::Mat& m, int type)
+{
+    shapes->drawBox(m, cv::Point(brushStartX + brushOffsetWidth, brushStartY + brushOffsetHeight * 2 + brushTextHeight),
+        cv::Point(brushStartX + brushOffsetWidth + brushRectWidth, brushStartY + brushOffsetHeight * 2 + brushTextHeight + brushRectHeight), white, -1);
+
+    shapes->drawBox(m, cv::Point(brushStartX + brushOffsetWidth, brushStartY + brushOffsetHeight * 2 + brushTextHeight),
+        cv::Point(brushStartX + brushOffsetWidth + brushRectWidth, brushStartY + brushOffsetHeight * 2 + brushTextHeight + brushRectHeight), black, 1);
+
+    cv::putText(m, brushName[type], cv::Point(brushStartX + brushOffsetWidth + brushTextOffsetWidth,
+        brushStartY + brushOffsetHeight * 2 + brushTextHeight + brushTextOffsetHeight + brushRectHeight / 2), cv::FONT_HERSHEY_SIMPLEX, 0.3, black, 1, cv::LINE_AA);
 }
 

@@ -5,7 +5,8 @@
 #include "data.h"
 #include "shapes.h"
 #include <algorithm>
-
+#include <ctime>
+#include <cstdlib>
 class Brush
 {
 public:
@@ -21,8 +22,11 @@ public:
     void selectBrush(cv::Mat& m, int mousePosX, int mousePosY);
 
     void selectBrushType(cv::Mat& m, int mousePosX, int mousePosY);
-    int changeBrushType(int mousePosX, int mousePosY);
+    int changeBrushType(cv::Mat& m, int mousePosX, int mousePosY);
 private:
+    void updateBrushType(cv::Mat& m, int type);
+
+
     Shapes* shapes;
     const int brushOffsetHeight = 8;
     const int brushOffsetWidth = 10;
@@ -37,8 +41,8 @@ private:
 
     int brushType = 0;
 
-    std::vector<std::string> brushName = { "Normal", "Square" };
-    const int brushPopUpHeight = brushName.size() * brushRectHeight;
+    std::vector<std::string> brushName = { "Normal", "Square", "Spill" };
+    const int brushPopUpHeight = (int)brushName.size() * brushRectHeight;
     const int brushPopUpWidth = 50;
 
     cv::Scalar popUpEdgeColor = CV_RGB(135, 206, 235);

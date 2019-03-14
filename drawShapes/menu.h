@@ -11,6 +11,7 @@
 #include "color.h"
 #include "select.h"
 #include "brush.h"
+#include "shape.h"
 using namespace std;
 
 enum Buttons
@@ -31,8 +32,6 @@ public:
 
     int getMouseClick(int mousePosX, int mousePosY);
 
-    void initialShapes(cv::Mat& m);
-
     void selectShape(cv::Mat& m, int mousePosX, int mousePosY);
     void selectedShape(cv::Mat& m, int index);
 
@@ -44,7 +43,7 @@ public:
     cv::Scalar changeDisplayColorNum(cv::Mat& m, int mousePosX, int mousePosY);
 
     void selectBrush(cv::Mat& m, int mousePosX, int mousePosY);
-    int changeBrush(int mousePosX, int mousePosY);
+    int changeBrush(cv::Mat& m, int mousePosX, int mousePosY);
 
     void changeState(int num);
 
@@ -70,7 +69,6 @@ private:
     bool g_startDrawing = false;
     bool g_drawShape = false;
     bool selectedFirst = false;
-    bool g_selectedShape = false;
     bool g_selectThickness = false;
     bool g_selectBrush = false;
 
@@ -78,13 +76,13 @@ private:
 
     vector<bool> g_buttonState;
 
-    cv::Scalar defaultShapeColor = CV_RGB(30, 144, 255);
 
     Shapes* shapes;
     Thickness* thickness;
     Color* color;
     Select* select;
     Brush* brush;
+    Shape* shape;
 };
 
 #endif

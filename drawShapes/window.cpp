@@ -240,19 +240,6 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
             }
             else menu->changeState(Buttons::cancel);
         }
-        else if (menu->getSelectBrush() && !drawWithBrush)
-        {
-            int type = menu->changeBrush(x, y);
-            if (type != -1)
-            {
-                brushType = type;
-                drawWithBrush = true;
-            }
-            menu->changeState(Buttons::cancel);
-            menu->changeDrawingState(true);
-            menu->changeSelectBrush(false);
-            break;
-        }
         else if (y >= menu->getMenuHeight() && menu->startDrawing())
         {
             if (drawWithBrush)
@@ -272,6 +259,19 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
                 menu->changeSelectState(true);
             }
         }
+        else if (menu->getSelectBrush() && menu->getButtonState()[Buttons::selectBrush])
+        {
+            int type = menu->changeBrush(menuMat, x, y);
+            if (type != -1)
+            {
+                brushType = type;
+                drawWithBrush = true;
+            }
+            menu->changeState(Buttons::cancel);
+            menu->changeDrawingState(true);
+            menu->changeSelectBrush(false);
+            break;
+        }
         else if(y <= menu->getMenuHeight())
         {
             int button = menu->getMouseClick(x, y);
@@ -280,6 +280,7 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
                 menu->selectedShape(menuMat, button - Buttons::rectangle);
             }
             if(button != -1) menu->changeState(button);
+            if (button != Buttons::selectBrush) drawWithBrush = false;
             if (button >= Buttons::normalBrush && button <= Buttons::polygon) g_prevSelectedShape = button;
             if (button == Buttons::thickness) menu->changeSelectThickness(true);
             else if (button == Buttons::selectBrush) menu->changeSelectBrush(true);

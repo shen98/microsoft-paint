@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _SHAPE_H_
-#define _SHAPE_H_
+#ifndef _SHAPES_H_
+#define _SHAPES_H_
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
