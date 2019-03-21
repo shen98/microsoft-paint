@@ -83,6 +83,43 @@ void Menu::initialMenu(cv::Mat& m, int width)
     brush->initializeBrush(m);
 }
 
+void Menu::drawShapes(cv::Mat& m)
+{
+    shape->drawAllShapes(m);
+}
+
+void Menu::drawTempShape(int index, cv::Mat& m, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness, bool finished)
+{
+    switch (index)
+    {
+    case 0:
+        shape->drawTempRect(m, startPos, endPos, color, thickness, finished);
+        break;
+    default:
+        break;
+    }
+}
+
+cv::Point Menu::checkMousePosOnCorner(cv::Mat& m, int mousePosX, int mousePosY)
+{
+    return shape->checkMousePosOnCorner(m, mousePosX, mousePosY);
+}
+
+void Menu::changeShapeCorner(int indexOfShape, int mousePosX, int mousePosY)
+{
+    shape->changeShapeCorner(indexOfShape, mousePosX, mousePosY);
+}
+
+void Menu::changeShapeStatus(int indexOfShape, bool finished)
+{
+    shape->changeShapeStatus(indexOfShape, finished);
+}
+
+int Menu::getSelectedShapeIndex(cv::Point p)
+{
+    return shape->getSelectedShapeIndex(p);
+}
+
 int Menu::getMouseClick(int mousePosX, int mousePosY)
 {
     if (mousePosX > Section::clipboard && mousePosX < Section::image)

@@ -30,6 +30,14 @@ public:
 
     void initialMenu(cv::Mat& m, int width);                    //Initially draw the menu
 
+    void drawShapes(cv::Mat& m);
+
+    void drawTempShape(int index, cv::Mat& m, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness, bool finished = false);
+    cv::Point checkMousePosOnCorner(cv::Mat& m, int mousePosX, int mousePosY);
+    void changeShapeCorner(int indexOfShape, int mousePosX, int mousePosY);
+    void changeShapeStatus(int indexOfShape, bool finished);
+    int getSelectedShapeIndex(cv::Point p);
+
     int getMouseClick(int mousePosX, int mousePosY);
 
     void selectShape(cv::Mat& m, int mousePosX, int mousePosY);

@@ -61,3 +61,109 @@ void Shape::selectedShape(cv::Mat& m, int index)
     g_selectedShape = true;
 }
 
+void Shape::drawTempRect(cv::Mat& m, cv::Point p1, cv::Point p2, cv::Scalar color, int thickness, bool finished)
+{
+    shapes->drawBox(m, p1, p2, color, thickness);
+
+    cv::Point p3, p4;
+    p3.x = p1.x;
+    p3.y = p2.y;
+    p4.x = p2.x;
+    p4.y = p1.y;
+
+    cv::circle(m, p1, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);          //left-up corner
+    cv::circle(m, p2, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);          //right-bottom corner
+    cv::circle(m, p3, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);          //left-bottom corner
+    cv::circle(m, p4, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);          //right-up corner
+
+    if (finished)
+    {
+        MyShape curShape(p1, p2, p3, p4, 0, color, thickness, finished);
+        myShapes.push_back(curShape);
+    }
+}
+
+cv::Point Shape::checkMousePosOnCorner(cv::Mat& m, int mousePosX, int mousePosY)
+{
+    mousePosX -= g_MenuOffsetWidth;
+    mousePosY -= (g_MenuHeight + g_MenuOffsetHeight);
+    for (int i = 0; i < myShapes.size(); ++i)
+    {
+        for (int j = 0; j < myShapes[i].corners.size(); ++j)
+        {
+            if (abs(mousePosX - myShapes[i].corners[j].x) <= 5 && abs(mousePosY - myShapes[i].corners[j].y) <= 5)
+            {
+                cv::circle(m, cv::Point(myShapes[i].corners[j].x + g_MenuOffsetWidth, myShapes[i].corners[j].y + g_MenuHeight + g_MenuOffsetHeight), selectedCornerSize, defaultShapeColor, -1, cv::LINE_AA);
+                if (j == 0) return myShapes[i].corners[1];
+                else if (j == 1) return myShapes[i].corners[0];
+                else if (j == 2) return myShapes[i].corners[3];
+                else if (j == 3) return myShapes[i].corners[2];
+            }
+        }
+    }
+    return cv::Point(-1, -1);
+}
+
+void Shape::selectedCorner(cv::Mat& m, int mousePosX, int mousePosY)
+{
+
+}
+
+void Shape::drawAllShapes(cv::Mat& m)
+{
+    m = cv::Scalar::all(255);
+    for (auto myShape : myShapes)
+    {
+        if(!myShape.finished) continue;
+        if (myShape.type == 0) shapes->drawBox(m, cv::Point(myShape.corners[0].x, myShape.corners[0].y),
+            cv::Point(myShape.corners[1].x, myShape.corners[1].y), myShape.color, myShape.thickness);
+
+
+        for (auto corner : myShape.corners)
+        {
+            cv::circle(m, corner, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);
+        }
+    }
+}
+
+void Shape::changeShapeCorner(int indexOfShape, int mousePosX, int mousePosY)
+{
+    cv::Point p(mousePosX, mousePosY);
+
+    changeCorner(indexOfShape, 0, mousePosX, mousePosY);
+}
+
+void Shape::changeShapeStatus(int indexOfShape, bool finished)
+{
+    myShapes[indexOfShape].finished = finished;
+}
+
+int Shape::getSelectedShapeIndex(cv::Point p)
+{
+    for (int i = 0; i < myShapes.size(); ++i)
+    {
+        for (auto corner : myShapes[i].corners)
+        {
+            if (corner == p) return i;
+        }
+    }
+}
+
+void Shape::changeCorner(int indexOfShape, int corner, int mousePosX, int mousePosY)
+{
+    int fixed = -1;
+
+    mousePosX -= g_MenuOffsetWidth;
+    mousePosY -= g_MenuHeight + g_MenuOffsetHeight;
+
+    if (corner == 0)
+    {
+        myShapes[indexOfShape].corners[0] = cv::Point(mousePosX, mousePosY);
+        myShapes[indexOfShape].corners[2].x = mousePosX;
+        myShapes[indexOfShape].corners[3].y = mousePosY;
+    }
+    else if (corner == 1) fixed = 0;
+    else if (corner == 2) fixed = 3;
+    else if (corner == 3) fixed = 2;
+
+}

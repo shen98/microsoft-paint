@@ -108,15 +108,19 @@ bool Window::initialWindow()
         menuMat.copyTo(backgroundMat(cv::Range(0, g_MenuHeight), cv::Range(0, g_Width)));
         windowMat.copyTo(backgroundMat(cv::Range(g_MenuHeight + windowOffsetHeight, windowMat.rows + g_MenuHeight + windowOffsetHeight), cv::Range(windowOffsetWidth, windowMat.cols + windowOffsetWidth)));
         backgroundMat.copyTo(temp);
+        menu->drawShapes(windowMat);
         menu->selectShape(temp, mouseX, mouseY);
         menu->selectColor(temp, mouseX, mouseY);
+        menu->checkMousePosOnCorner(temp, mouseX, mouseY);
+        
         if (menu->getButtonState()[Buttons::selectBox] && menu->startDrawing())
         {
             if (endPos.x != 0 && endPos.y != 0) shapes->drawDottedRectangle(temp, startPos, endPos, drawingColor, thichLevel);
         }
         else if (menu->getButtonState()[Buttons::rectangle] && menu->startDrawing())
         {
-            if (endPos.x != 0 && endPos.y != 0) shapes->drawBox(temp, startPos, endPos, drawingColor, thichLevel);
+            //if (endPos.x != 0 && endPos.y != 0) shapes->drawBox(temp, startPos, endPos, drawingColor, thichLevel);
+            if (endPos.x != 0 && endPos.y != 0) menu->drawTempShape(0, temp, startPos, endPos, drawingColor, thichLevel);
         }
         else if (menu->getButtonState()[Buttons::line] && menu->startDrawing())
         {
@@ -199,6 +203,11 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
     {
     case cv::EVENT_MOUSEMOVE:
     {
+        if (changeShape != -1)
+        {
+            menu->changeShapeCorner(changeShape, x, y);
+            break;
+        }
         if (startDrawWithBrush)
         {
             menu->drawWithBrush(windowMat, startPos, cv::Point(x, y), brushType, drawingColor, thichLevel);
@@ -211,6 +220,16 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
     break;
     case cv::EVENT_LBUTTONDOWN:
     {
+        cv::Point p = menu->checkMousePosOnCorner(temp, x, y);
+        if (p != cv::Point(-1, -1))
+        {
+            cout << 1;
+            startPos = p;
+            menu->changeState(Buttons::rectangle);
+            menu->changeDrawingState(true);
+            changeShape = menu->getSelectedShapeIndex(p);
+            break;
+        }
         cv::Scalar c = menu->changeDisplayColorNum(menuMat, x, y);
         if (c != cv::Scalar(-1, -1, -1))
         {
@@ -289,6 +308,12 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
     break;
     case cv::EVENT_LBUTTONUP:
     {
+        if (changeShape != -1)
+        {
+            menu->changeShapeStatus(changeShape, true);
+            changeShape = -1;
+            break;
+        }
         if (startDrawWithBrush)
         {
             startDrawWithBrush = !startDrawWithBrush;
@@ -307,7 +332,8 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
                 startPos = endPos;
                 return;
             }
-            if (menu->getButtonState()[Buttons::rectangle]) shapes->drawBox(windowMat, startPos, endPos, drawingColor, thichLevel);
+            //if (menu->getButtonState()[Buttons::rectangle]) shapes->drawBox(windowMat, startPos, endPos, drawingColor, thichLevel);
+            if (menu->getButtonState()[Buttons::rectangle]) menu->drawTempShape(0, windowMat, startPos, endPos, drawingColor, thichLevel, true);
             if (menu->getButtonState()[Buttons::line]) shapes->drawLine(windowMat, startPos, endPos, drawingColor, thichLevel);
             else if (menu->getButtonState()[Buttons::ellipse]) shapes->drawEllipse(windowMat, startPos, endPos, drawingColor, thichLevel);
             else if (menu->getButtonState()[Buttons::roundedRectangle]) shapes->drawRoundedRectangle(windowMat, startPos, endPos, drawingColor, thichLevel);

@@ -42,6 +42,8 @@ private:
     bool drawWithBrush = false;
     bool startDrawWithBrush = false;
 
+    int changeShape = -1;
+
     Menu* menu;
     Shapes* shapes;
     History* history;
