@@ -78,9 +78,53 @@ void Shape::drawTempRect(cv::Mat& m, cv::Point p1, cv::Point p2, cv::Scalar colo
 
     if (finished)
     {
-        MyShape curShape(p1, p2, p3, p4, 0, color, thickness, finished);
+        MyShape curShape(p1, p2, p3, p4, RECTANGLE, color, thickness, finished);
         myShapes.push_back(curShape);
     }
+}
+
+void Shape::drawTempLine(cv::Mat& m, cv::Point p1, cv::Point p2, cv::Scalar color, int thickness, bool finished)
+{
+    shapes->drawLine(m, p1, p2, color, thickness);
+
+    cv::circle(m, p1, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);
+    cv::circle(m, p2, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);
+
+    if (finished)
+    {
+        MyShape curShape(p1, p2, cv::Point(-1, -1), cv::Point(-1, -1), LINE, color, thickness, finished);
+        myShapes.push_back(curShape);
+    }
+}
+
+void Shape::drawTempCircle(cv::Mat& m, cv::Point p1, cv::Point p2, cv::Scalar color, int thickness, bool finished)
+{
+    shapes->drawEllipse(m, p1, p2, color, thickness);
+
+    cv::Point p3, p4, p5, p6;
+
+    double difWidth = abs(p1.x - p2.x), difHeight = abs(p1.y - p2.y);
+
+    p3.x = p1.x - difWidth; p3.y = p1.y - difHeight;
+    p4.x = p1.x - difWidth; p4.y = p1.y + difHeight;
+    p5.x = p1.x + difWidth; p5.y = p1.y - difHeight;
+    p6.x = p1.x + difWidth; p6.y = p1.y + difHeight;
+
+    cv::circle(m, p3, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);
+    cv::circle(m, p4, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);
+    cv::circle(m, p5, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);
+    cv::circle(m, p6, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);
+
+    if (finished)
+    {
+        MyShape curShape(p3, p4, p5, p6, CIRCLE, color, thickness, finished, p1);
+        myShapes.push_back(curShape);
+    }
+}
+
+void Shape::drawTempTriangle(cv::Mat& m, cv::Point p1, cv::Point p2, cv::Scalar color, int thickness, bool finished)
+{
+
 }
 
 cv::Point Shape::checkMousePosOnCorner(cv::Mat& m, int mousePosX, int mousePosY)
@@ -94,6 +138,7 @@ cv::Point Shape::checkMousePosOnCorner(cv::Mat& m, int mousePosX, int mousePosY)
             if (abs(mousePosX - myShapes[i].corners[j].x) <= 5 && abs(mousePosY - myShapes[i].corners[j].y) <= 5)
             {
                 cv::circle(m, cv::Point(myShapes[i].corners[j].x + g_MenuOffsetWidth, myShapes[i].corners[j].y + g_MenuHeight + g_MenuOffsetHeight), selectedCornerSize, defaultShapeColor, -1, cv::LINE_AA);
+                g_selectedCorner = j;
                 if (j == 0) return myShapes[i].corners[1];
                 else if (j == 1) return myShapes[i].corners[0];
                 else if (j == 2) return myShapes[i].corners[3];
@@ -115,12 +160,19 @@ void Shape::drawAllShapes(cv::Mat& m)
     for (auto myShape : myShapes)
     {
         if(!myShape.finished) continue;
-        if (myShape.type == 0) shapes->drawBox(m, cv::Point(myShape.corners[0].x, myShape.corners[0].y),
+        if (myShape.type == RECTANGLE) shapes->drawBox(m, cv::Point(myShape.corners[0].x, myShape.corners[0].y),
             cv::Point(myShape.corners[1].x, myShape.corners[1].y), myShape.color, myShape.thickness);
-
-
+        else if (myShape.type == LINE) shapes->drawLine(m, cv::Point(myShape.corners[0].x, myShape.corners[0].y),
+            cv::Point(myShape.corners[1].x, myShape.corners[1].y), myShape.color, myShape.thickness);
+        else if (myShape.type == CIRCLE)
+        {
+            shapes->drawEllipse(m, cv::Point(myShape.corners[4].x, myShape.corners[4].y),
+                cv::Point(myShape.corners[0].x, myShape.corners[0].y), myShape.color, myShape.thickness);
+        }
+        
         for (auto corner : myShape.corners)
         {
+            if (corner.x == -1 || corner.y == -1) continue;
             cv::circle(m, corner, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);
         }
     }
@@ -130,7 +182,7 @@ void Shape::changeShapeCorner(int indexOfShape, int mousePosX, int mousePosY)
 {
     cv::Point p(mousePosX, mousePosY);
 
-    changeCorner(indexOfShape, 0, mousePosX, mousePosY);
+    changeCorner(indexOfShape, g_selectedCorner, mousePosX, mousePosY);
 }
 
 void Shape::changeShapeStatus(int indexOfShape, bool finished)
@@ -156,14 +208,47 @@ void Shape::changeCorner(int indexOfShape, int corner, int mousePosX, int mouseP
     mousePosX -= g_MenuOffsetWidth;
     mousePosY -= g_MenuHeight + g_MenuOffsetHeight;
 
+    if (myShapes[indexOfShape].type == CIRCLE)
+    {
+        cv::Point p3, p4, p5, p6;
+
+        double difWidth = abs(myShapes[indexOfShape].corners[4].x - mousePosX), difHeight = abs(myShapes[indexOfShape].corners[4].y - mousePosY);
+
+        p3.x = myShapes[indexOfShape].corners[4].x - difWidth; p3.y = myShapes[indexOfShape].corners[4].y - difHeight;
+        p4.x = myShapes[indexOfShape].corners[4].x - difWidth; p4.y = myShapes[indexOfShape].corners[4].y + difHeight;
+        p5.x = myShapes[indexOfShape].corners[4].x + difWidth; p5.y = myShapes[indexOfShape].corners[4].y - difHeight;
+        p6.x = myShapes[indexOfShape].corners[4].x + difWidth; p6.y = myShapes[indexOfShape].corners[4].y + difHeight;
+
+        myShapes[indexOfShape].corners[0] = p3;
+        myShapes[indexOfShape].corners[1] = p4;
+        myShapes[indexOfShape].corners[2] = p5;
+        myShapes[indexOfShape].corners[3] = p6;
+        return;
+    }
+
     if (corner == 0)
     {
         myShapes[indexOfShape].corners[0] = cv::Point(mousePosX, mousePosY);
-        myShapes[indexOfShape].corners[2].x = mousePosX;
-        myShapes[indexOfShape].corners[3].y = mousePosY;
+        if (myShapes[indexOfShape].corners[2].x != -1) myShapes[indexOfShape].corners[2].x = mousePosX;
+        if (myShapes[indexOfShape].corners[3].y != -1) myShapes[indexOfShape].corners[3].y = mousePosY;
     }
-    else if (corner == 1) fixed = 0;
-    else if (corner == 2) fixed = 3;
-    else if (corner == 3) fixed = 2;
+    else if (corner == 1)
+    {
+        myShapes[indexOfShape].corners[1] = cv::Point(mousePosX, mousePosY);
+        if (myShapes[indexOfShape].corners[3].x != -1) myShapes[indexOfShape].corners[3].x = mousePosX;
+        if (myShapes[indexOfShape].corners[2].y != -1) myShapes[indexOfShape].corners[2].y = mousePosY;
+    }
+    else if (corner == 2)
+    {
+        myShapes[indexOfShape].corners[2] = cv::Point(mousePosX, mousePosY);
+        myShapes[indexOfShape].corners[0].x = mousePosX;
+        myShapes[indexOfShape].corners[1].y = mousePosY;
+    }
+    else if (corner == 3)
+    {
+        myShapes[indexOfShape].corners[3] = cv::Point(mousePosX, mousePosY);
+        myShapes[indexOfShape].corners[1].x = mousePosX;
+        myShapes[indexOfShape].corners[0].y = mousePosY;
+    }
 
 }

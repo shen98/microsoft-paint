@@ -95,6 +95,12 @@ void Menu::drawTempShape(int index, cv::Mat& m, cv::Point startPos, cv::Point en
     case 0:
         shape->drawTempRect(m, startPos, endPos, color, thickness, finished);
         break;
+    case 1:
+        shape->drawTempLine(m, startPos, endPos, color, thickness, finished);
+        break;
+    case 2:
+        shape->drawTempCircle(m, startPos, endPos, color, thickness, finished);
+        break;
     default:
         break;
     }

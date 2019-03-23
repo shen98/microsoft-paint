@@ -333,9 +333,9 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
                 return;
             }
             //if (menu->getButtonState()[Buttons::rectangle]) shapes->drawBox(windowMat, startPos, endPos, drawingColor, thichLevel);
-            if (menu->getButtonState()[Buttons::rectangle]) menu->drawTempShape(0, windowMat, startPos, endPos, drawingColor, thichLevel, true);
-            if (menu->getButtonState()[Buttons::line]) shapes->drawLine(windowMat, startPos, endPos, drawingColor, thichLevel);
-            else if (menu->getButtonState()[Buttons::ellipse]) shapes->drawEllipse(windowMat, startPos, endPos, drawingColor, thichLevel);
+            if (menu->getButtonState()[Buttons::rectangle]) menu->drawTempShape(RECTANGLE, windowMat, startPos, endPos, drawingColor, thichLevel, true);
+            else if (menu->getButtonState()[Buttons::line]) menu->drawTempShape(LINE, windowMat, startPos, endPos, drawingColor, thichLevel, true);
+            else if (menu->getButtonState()[Buttons::ellipse]) menu->drawTempShape(CIRCLE, windowMat, startPos, endPos, drawingColor, thichLevel, true);
             else if (menu->getButtonState()[Buttons::roundedRectangle]) shapes->drawRoundedRectangle(windowMat, startPos, endPos, drawingColor, thichLevel);
             else if (menu->getButtonState()[Buttons::triangle]) shapes->drawRegularTriangle(windowMat, startPos, endPos, drawingColor, thichLevel);
             else if (menu->getButtonState()[Buttons::selectBox])
