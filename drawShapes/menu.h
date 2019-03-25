@@ -37,6 +37,7 @@ public:
     void changeShapeCorner(int indexOfShape, int mousePosX, int mousePosY);
     void changeShapeStatus(int indexOfShape, bool finished);
     int getSelectedShapeIndex(cv::Point p);
+    void finishDrawingShape(int indexOfShape, bool status = false);
 
     int getMouseClick(int mousePosX, int mousePosY);
 

@@ -133,6 +133,7 @@ cv::Point Shape::checkMousePosOnCorner(cv::Mat& m, int mousePosX, int mousePosY)
     mousePosY -= (g_MenuHeight + g_MenuOffsetHeight);
     for (int i = 0; i < myShapes.size(); ++i)
     {
+        if (myShapes[i].completed) continue;
         for (int j = 0; j < myShapes[i].corners.size(); ++j)
         {
             if (abs(mousePosX - myShapes[i].corners[j].x) <= 5 && abs(mousePosY - myShapes[i].corners[j].y) <= 5)
@@ -170,10 +171,13 @@ void Shape::drawAllShapes(cv::Mat& m)
                 cv::Point(myShape.corners[0].x, myShape.corners[0].y), myShape.color, myShape.thickness);
         }
         
-        for (auto corner : myShape.corners)
+        if (!myShape.completed)
         {
-            if (corner.x == -1 || corner.y == -1) continue;
-            cv::circle(m, corner, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);
+            for (auto corner : myShape.corners)
+            {
+                if (corner.x == -1 || corner.y == -1) continue;
+                cv::circle(m, corner, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);
+            }
         }
     }
 }
@@ -194,11 +198,17 @@ int Shape::getSelectedShapeIndex(cv::Point p)
 {
     for (int i = 0; i < myShapes.size(); ++i)
     {
+        if (myShapes[i].completed) continue;
         for (auto corner : myShapes[i].corners)
         {
             if (corner == p) return i;
         }
     }
+}
+
+void Shape::finishDrawingShape(int indexOfShape, bool status)
+{
+    myShapes[indexOfShape].completed = status;
 }
 
 void Shape::changeCorner(int indexOfShape, int corner, int mousePosX, int mousePosY)

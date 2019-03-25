@@ -126,6 +126,11 @@ int Menu::getSelectedShapeIndex(cv::Point p)
     return shape->getSelectedShapeIndex(p);
 }
 
+void Menu::finishDrawingShape(int indexOfShape, bool status)
+{
+    shape->finishDrawingShape(indexOfShape, status);
+}
+
 int Menu::getMouseClick(int mousePosX, int mousePosY)
 {
     if (mousePosX > Section::clipboard && mousePosX < Section::image)

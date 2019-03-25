@@ -16,10 +16,12 @@ struct MyShape
     int type;
     int thickness;
     cv::Scalar color;
-    bool finished = false;
+    bool finished = false;              //finished drawing and add to windowMat
+    bool completed = false;             
 
-    MyShape(cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, int type, cv::Scalar color, int thickness, bool finished = false, cv::Point p5 = cv::Point(-1, -1))
-        : type(type), thickness(thickness), color(color), finished(finished)
+    MyShape(cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, int type, cv::Scalar color, int thickness, 
+        bool finished = false, cv::Point p5 = cv::Point(-1, -1), bool completed = false)
+        : type(type), thickness(thickness), color(color), finished(finished), completed(completed)
     {
         vector<cv::Point> vec{ p1, p2, p3, p4 };
         if (p5 != cv::Point(-1, -1)) vec.push_back(p5);
@@ -52,6 +54,7 @@ public:
     void changeShapeCorner(int indexOfShape, int mousePosX, int mousePosY);
     void changeShapeStatus(int indexOfShape, bool finished);
     int getSelectedShapeIndex(cv::Point p);
+    void finishDrawingShape(int indexOfShape, bool status = true);
 private:
     void changeCorner(int indexOfShape, int corner, int mousePosX, int mousePosY);
 private:

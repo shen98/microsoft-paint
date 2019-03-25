@@ -3,7 +3,7 @@
 
 History::History()
 {
-    history = vector<cv::Mat>();
+    history = vector<Event>();
     currentIndex = 0;
 }
 
@@ -18,22 +18,32 @@ bool History::initialize(cv::Mat m)
     return true;
 }
 
-void History::addHistory(cv::Mat m)
+void History::addHistory(cv::Mat m, int indexOfShape)
 {
     currentIndex++;
-    history.push_back(m);
+    history.push_back(Event(m, indexOfShape));
+    
+    historyCopy = history;
 }
 
-cv::Mat History::getNextHistory()
+Event History::getNextHistory()
 {
     if (history.size() > currentIndex + 1) currentIndex++;
     return history[currentIndex];
 }
 
-cv::Mat History::getPrevHistory()
+Event History::getPrevHistory()
 {
-    if (currentIndex > 0) currentIndex--;
+    if (currentIndex > 0)
+    {
+        currentIndex--;
+    }
+    cout << currentIndex << endl;
     return history[currentIndex];
 }
 
 
+void History::copy()
+{
+    historyCopy = history;
+}

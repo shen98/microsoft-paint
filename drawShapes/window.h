@@ -25,9 +25,6 @@ private:
     void initPoints();
 
     wstring selectFile();
-
-    void addToHistory(cv::Mat m);
-
 private:
     cv::Point startPos, endPos, initPos;
     cv::Mat windowMat, temp, menuMat, backgroundMat;
@@ -42,6 +39,7 @@ private:
     bool drawWithBrush = false;
     bool startDrawWithBrush = false;
 
+    bool changeShapeCorner = false;
     int changeShape = -1;
 
     Menu* menu;
