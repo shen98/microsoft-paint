@@ -7,6 +7,24 @@
 #include <algorithm>
 #include <ctime>
 #include <cstdlib>
+
+const int NORMAL = 0;
+const int SQUARE = 1;
+const int SPILL = 2;
+
+struct MyBrush
+{
+    int type;
+    cv::Point startPos;
+    cv::Point endPos;
+    cv::Scalar color;
+    int thickness = 1;
+
+    MyBrush(cv::Point startPos, cv::Point endPos, int type, cv::Scalar color, int thickness)
+        : startPos(startPos), endPos(endPos), type(type), color(color), thickness(thickness)
+    {}
+};
+
 class Brush
 {
 public:
@@ -23,9 +41,12 @@ public:
 
     void selectBrushType(cv::Mat& m, int mousePosX, int mousePosY);
     int changeBrushType(cv::Mat& m, int mousePosX, int mousePosY);
+
+    vector<MyBrush> getBrushes();
 private:
     void updateBrushType(cv::Mat& m, int type);
 
+    vector<MyBrush> myBrushes;
 
     Shapes* shapes;
     const int brushOffsetHeight = 8;

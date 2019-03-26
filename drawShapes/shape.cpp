@@ -155,32 +155,32 @@ void Shape::selectedCorner(cv::Mat& m, int mousePosX, int mousePosY)
 
 }
 
-void Shape::drawAllShapes(cv::Mat& m)
-{
-    m = cv::Scalar::all(255);
-    for (auto myShape : myShapes)
-    {
-        if(!myShape.finished) continue;
-        if (myShape.type == RECTANGLE) shapes->drawBox(m, cv::Point(myShape.corners[0].x, myShape.corners[0].y),
-            cv::Point(myShape.corners[1].x, myShape.corners[1].y), myShape.color, myShape.thickness);
-        else if (myShape.type == LINE) shapes->drawLine(m, cv::Point(myShape.corners[0].x, myShape.corners[0].y),
-            cv::Point(myShape.corners[1].x, myShape.corners[1].y), myShape.color, myShape.thickness);
-        else if (myShape.type == CIRCLE)
-        {
-            shapes->drawEllipse(m, cv::Point(myShape.corners[4].x, myShape.corners[4].y),
-                cv::Point(myShape.corners[0].x, myShape.corners[0].y), myShape.color, myShape.thickness);
-        }
-        
-        if (!myShape.completed)
-        {
-            for (auto corner : myShape.corners)
-            {
-                if (corner.x == -1 || corner.y == -1) continue;
-                cv::circle(m, corner, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);
-            }
-        }
-    }
-}
+//void Shape::drawAllShapes(cv::Mat& m)
+//{
+//    m = cv::Scalar::all(255);
+//    for (auto myShape : myShapes)
+//    {
+//        if(!myShape.finished) continue;
+//        if (myShape.type == RECTANGLE) shapes->drawBox(m, cv::Point(myShape.corners[0].x, myShape.corners[0].y),
+//            cv::Point(myShape.corners[1].x, myShape.corners[1].y), myShape.color, myShape.thickness);
+//        else if (myShape.type == LINE) shapes->drawLine(m, cv::Point(myShape.corners[0].x, myShape.corners[0].y),
+//            cv::Point(myShape.corners[1].x, myShape.corners[1].y), myShape.color, myShape.thickness);
+//        else if (myShape.type == CIRCLE)
+//        {
+//            shapes->drawEllipse(m, cv::Point(myShape.corners[4].x, myShape.corners[4].y),
+//                cv::Point(myShape.corners[0].x, myShape.corners[0].y), myShape.color, myShape.thickness);
+//        }
+//        
+//        if (!myShape.completed)
+//        {
+//            for (auto corner : myShape.corners)
+//            {
+//                if (corner.x == -1 || corner.y == -1) continue;
+//                cv::circle(m, corner, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);
+//            }
+//        }
+//    }
+//}
 
 void Shape::changeShapeCorner(int indexOfShape, int mousePosX, int mousePosY)
 {
@@ -209,6 +209,17 @@ int Shape::getSelectedShapeIndex(cv::Point p)
 void Shape::finishDrawingShape(int indexOfShape, bool status)
 {
     myShapes[indexOfShape].completed = status;
+}
+
+void Shape::changeSelectedShapeColor(int indexOfShape, cv::Scalar color)
+{
+    if (myShapes[indexOfShape].completed) return;
+    myShapes[indexOfShape].color = color;
+}
+
+std::vector<MyShape> Shape::getShapes()
+{
+    return myShapes;
 }
 
 void Shape::changeCorner(int indexOfShape, int corner, int mousePosX, int mousePosY)

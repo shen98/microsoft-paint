@@ -25,6 +25,7 @@ private:
     void initPoints();
 
     wstring selectFile();
+
 private:
     cv::Point startPos, endPos, initPos;
     cv::Mat windowMat, temp, menuMat, backgroundMat;

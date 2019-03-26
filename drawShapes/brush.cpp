@@ -38,22 +38,7 @@ void Brush::drawWithBrush(cv::Mat& m, cv::Point startPos, cv::Point endPos, int 
     startPos = cv::Point(startPos.x - windowOffsetWidth, startPos.y - g_MenuHeight - windowOffsetHeight);
     endPos = cv::Point(endPos.x - windowOffsetWidth, endPos.y - g_MenuHeight - windowOffsetHeight);
     
-    if(type == 0) shapes->drawLine(m, startPos, endPos, color, thickness);
-    else if (type == 1)
-    {
-        double height = sqrt(pow((startPos.x - endPos.x), 2) + pow((startPos.y - endPos.y), 2));
-        double cos = abs(startPos.x - endPos.x) / height;
-        double sin = abs(startPos.y - endPos.y) / height;
-
-        cv::Point p1, p2;
-        p1.x = startPos.x - 1.5 * height * sin;
-        p1.y = startPos.y - 1.5 * height * cos;
-        p2.x = endPos.x + 1.5 * height * sin;
-        p2.y = endPos.y + 1.5 * height * cos;
-
-        shapes->drawBox(m, p1, p2, color, thickness);
-    }
-    else if (type == 2)
+    if (type == SPILL)
     {
         int i = 0;
         while (i++ < 10)
@@ -68,9 +53,10 @@ void Brush::drawWithBrush(cv::Mat& m, cv::Point startPos, cv::Point endPos, int 
             p2.x = p1.x;
             p2.y = p1.y - r;
 
-            shapes->drawCircle(m, p1, p2, color, -1);
+            myBrushes.push_back(MyBrush(p1, p2, type, color, -1));
         }
     }
+    else myBrushes.push_back(MyBrush(startPos, endPos, type, color, thickness));
 }
 
 void Brush::selectBrush(cv::Mat& m, int mousePosX, int mousePosY)
@@ -108,6 +94,11 @@ int Brush::changeBrushType(cv::Mat& m, int mousePosX, int mousePosY)
     updateBrushType(m, brushType);
 
     return (mousePosY - startY) / brushRectHeight;
+}
+
+std::vector<MyBrush> Brush::getBrushes()
+{
+    return myBrushes;
 }
 
 void Brush::updateBrushType(cv::Mat& m, int type)

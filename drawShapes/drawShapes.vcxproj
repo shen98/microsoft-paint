@@ -148,6 +148,7 @@
     <ClInclude Include="brush.h" />
     <ClInclude Include="color.h" />
     <ClInclude Include="data.h" />
+    <ClInclude Include="draw.h" />
     <ClInclude Include="history.h" />
     <ClInclude Include="image.h" />
     <ClInclude Include="menu.h" />
@@ -163,6 +164,7 @@
   <ItemGroup>
     <ClCompile Include="brush.cpp" />
     <ClCompile Include="color.cpp" />
+    <ClCompile Include="draw.cpp" />
     <ClCompile Include="drawShapes.cpp" />
     <ClCompile Include="history.cpp" />
     <ClCompile Include="image.cpp" />

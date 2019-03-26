@@ -50,11 +50,14 @@ public:
 
     void selectedCorner(cv::Mat& m, int mousePosX, int mousePosY);
 
-    void drawAllShapes(cv::Mat& m);
+    //void drawAllShapes(cv::Mat& m);
     void changeShapeCorner(int indexOfShape, int mousePosX, int mousePosY);
     void changeShapeStatus(int indexOfShape, bool finished);
     int getSelectedShapeIndex(cv::Point p);
     void finishDrawingShape(int indexOfShape, bool status = true);
+    void changeSelectedShapeColor(int indexOfShape, cv::Scalar color);
+
+    vector<MyShape> getShapes();
 private:
     void changeCorner(int indexOfShape, int corner, int mousePosX, int mousePosY);
 private:

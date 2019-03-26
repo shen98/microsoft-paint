@@ -83,54 +83,6 @@ void Menu::initialMenu(cv::Mat& m, int width)
     brush->initializeBrush(m);
 }
 
-void Menu::drawShapes(cv::Mat& m)
-{
-    shape->drawAllShapes(m);
-}
-
-void Menu::drawTempShape(int index, cv::Mat& m, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness, bool finished)
-{
-    switch (index)
-    {
-    case 0:
-        shape->drawTempRect(m, startPos, endPos, color, thickness, finished);
-        break;
-    case 1:
-        shape->drawTempLine(m, startPos, endPos, color, thickness, finished);
-        break;
-    case 2:
-        shape->drawTempCircle(m, startPos, endPos, color, thickness, finished);
-        break;
-    default:
-        break;
-    }
-}
-
-cv::Point Menu::checkMousePosOnCorner(cv::Mat& m, int mousePosX, int mousePosY)
-{
-    return shape->checkMousePosOnCorner(m, mousePosX, mousePosY);
-}
-
-void Menu::changeShapeCorner(int indexOfShape, int mousePosX, int mousePosY)
-{
-    shape->changeShapeCorner(indexOfShape, mousePosX, mousePosY);
-}
-
-void Menu::changeShapeStatus(int indexOfShape, bool finished)
-{
-    shape->changeShapeStatus(indexOfShape, finished);
-}
-
-int Menu::getSelectedShapeIndex(cv::Point p)
-{
-    return shape->getSelectedShapeIndex(p);
-}
-
-void Menu::finishDrawingShape(int indexOfShape, bool status)
-{
-    shape->finishDrawingShape(indexOfShape, status);
-}
-
 int Menu::getMouseClick(int mousePosX, int mousePosY)
 {
     if (mousePosX > Section::clipboard && mousePosX < Section::image)
@@ -163,16 +115,6 @@ int Menu::getMouseClick(int mousePosX, int mousePosY)
     }
 
     return -1;
-}
-
-void Menu::selectShape(cv::Mat& m, int mousePosX, int mousePosY)
-{
-    shape->selectShape(m, mousePosX, mousePosY);
-}
-
-void Menu::selectedShape(cv::Mat& m, int index)
-{
-    shape->selectedShape(m, index);
 }
 
 void Menu::selectThickness(cv::Mat& m, int mousePosX, int mousePosY, int selected)
@@ -248,11 +190,6 @@ bool Menu::getSelectedFirst()
 void Menu::changeSelectState(bool state)
 {
     selectedFirst = state;
-}
-
-void Menu::drawWithBrush(cv::Mat& m, cv::Point startPos, cv::Point endPos, int type, cv::Scalar color, int thickness)
-{
-    brush->drawWithBrush(m, startPos, endPos, type, color, thickness);
 }
 
 bool Menu::getSelectThickness()
