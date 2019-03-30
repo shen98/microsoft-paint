@@ -29,6 +29,10 @@ public:
     void selectedShape(cv::Mat& m, int index);
     void changeSelectedShapeColor(int indexOfShape, cv::Scalar color);
 
+    void changeSelectedStatus(int status);
+    bool selectedRotate();
+    void rotateShape(cv::Mat& m, int indexOfShape, int mousePosX, int mousePosY);
+
     void drawWithBrush(cv::Mat& m, cv::Point startPos, cv::Point endPos, int type, cv::Scalar color, int thickness = 1);
 
 private:

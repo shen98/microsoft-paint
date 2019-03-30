@@ -116,7 +116,22 @@ void Paint::changeSelectedShapeColor(int indexOfShape, cv::Scalar color)
     shape->changeSelectedShapeColor(indexOfShape, color);
 }
 
+void Paint::changeSelectedStatus(int status)
+{
+    shape->changeSelectedStatus(status);
+}
+
 void Paint::drawWithBrush(cv::Mat& m, cv::Point startPos, cv::Point endPos, int type, cv::Scalar color, int thickness /*= 1*/)
 {
     brush->drawWithBrush(m, startPos, endPos, type, color, thickness);
+}
+
+bool Paint::selectedRotate()
+{
+    return shape->selectedRatote();
+}
+
+void Paint::rotateShape(cv::Mat& m, int indexOfShape, int mousePosX, int mousePosY)
+{
+    shape->rotateShape(m, indexOfShape, mousePosX, mousePosY);
 }

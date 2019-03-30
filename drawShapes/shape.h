@@ -9,6 +9,16 @@
 #define LINE 1
 #define CIRCLE 2
 
+enum ShapeCorners
+{
+    Left_Up_Corner,
+    Right_Buttom_Corner,
+    Left_Bottom_Corner,
+    Right_Up_Corner,
+    Rotate,
+    Center
+};
+
 struct MyShape
 {
     vector<cv::Point> corners;
@@ -19,11 +29,11 @@ struct MyShape
     bool finished = false;              //finished drawing and add to windowMat
     bool completed = false;             
 
-    MyShape(cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, int type, cv::Scalar color, int thickness, 
+    MyShape(cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point rotate, int type, cv::Scalar color, int thickness, 
         bool finished = false, cv::Point p5 = cv::Point(-1, -1), bool completed = false)
         : type(type), thickness(thickness), color(color), finished(finished), completed(completed)
     {
-        vector<cv::Point> vec{ p1, p2, p3, p4 };
+        vector<cv::Point> vec{ p1, p2, p3, p4, rotate };
         if (p5 != cv::Point(-1, -1)) vec.push_back(p5);
         corners = vec;
     }
@@ -50,7 +60,6 @@ public:
 
     void selectedCorner(cv::Mat& m, int mousePosX, int mousePosY);
 
-    //void drawAllShapes(cv::Mat& m);
     void changeShapeCorner(int indexOfShape, int mousePosX, int mousePosY);
     void changeShapeStatus(int indexOfShape, bool finished);
     int getSelectedShapeIndex(cv::Point p);
@@ -58,8 +67,17 @@ public:
     void changeSelectedShapeColor(int indexOfShape, cv::Scalar color);
 
     vector<MyShape> getShapes();
+
+    bool selectedRatote();
+    void rotateShape(cv::Mat& m, int indexOfShape, int mousePosX, int mousePosY);
+    
+    void changeSelectedStatus(int status);
+
 private:
     void changeCorner(int indexOfShape, int corner, int mousePosX, int mousePosY);
+
+    double getDistance(cv::Point p1, cv::Point p2);
+
 private:
     vector<MyShape> myShapes;
 

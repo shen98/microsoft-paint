@@ -115,7 +115,7 @@ bool Window::initialWindow()
         
         if (menu->getButtonState()[Buttons::selectBox] && menu->startDrawing())
         {
-            if (endPos.x != 0 && endPos.y != 0) shapes->drawDottedRectangle(temp, startPos, endPos, drawingColor, thichLevel);
+            if (endPos.x != 0 && endPos.y != 0) shapes->drawDottedRectangle(temp, startPos, endPos, black, thichLevel);
         }
         else if (menu->getButtonState()[Buttons::rectangle] && menu->startDrawing())
         {
@@ -193,7 +193,7 @@ bool Window::initialWindow()
         }
         else if (key == 13 && changeShape != -1)
         {
-            paint->finishDrawingShape(changeShape, true);
+            if(selectedShapes) paint->finishDrawingShape(changeShape, true);
         }
         else if(key == 26)                                                          //Ctrl + z undo
         {
@@ -227,6 +227,10 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
     {
     case cv::EVENT_MOUSEMOVE:
     {
+        if (paint->selectedRotate() && changeShapeCorner)
+        {
+            paint->rotateShape(windowMat, changeShape, x, y);
+        }
         if (changeShapeCorner)
         {
             paint->changeShapeCorner(changeShape, x, y);
@@ -252,20 +256,21 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
             menu->changeDrawingState(true);
             changeShape = paint->getSelectedShapeIndex(p);
             changeShapeCorner = true;
+            selectedShapes = true;
             break;
         }
         cv::Scalar c = menu->changeDisplayColorNum(menuMat, x, y);
         if (c != cv::Scalar(-1, -1, -1))
         {
             drawingColor = c;
-            paint->changeSelectedShapeColor(changeShape, drawingColor);
+            if(selectedShapes) paint->changeSelectedShapeColor(changeShape, drawingColor);
             menu->changeState(g_prevSelectedShape);
             break;
         }
         else if (menu->changeColor(menuMat, x, y) != cv::Scalar(-1, -1, -1))
         {
             drawingColor = menu->changeColor(menuMat, x, y);
-            paint->changeSelectedShapeColor(changeShape, drawingColor);
+            if(selectedShapes) paint->changeSelectedShapeColor(changeShape, drawingColor);
             menu->changeState(g_prevSelectedShape);
             break;
         }
@@ -315,6 +320,7 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
             menu->changeState(Buttons::cancel);
             menu->changeDrawingState(true);
             menu->changeSelectBrush(false);
+            selectedShapes = false;
             break;
         }
         else if(y <= menu->getMenuHeight())
@@ -323,6 +329,7 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
             if (button >= Buttons::rectangle && button <= Buttons::triangle)                    //add selected shape effect
             {
                 paint->selectedShape(menuMat, button - Buttons::rectangle);
+                selectedShapes = true;
             }
             if(button != -1) menu->changeState(button);
             if (button != Buttons::selectBrush) drawWithBrush = false;
@@ -339,6 +346,7 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
             paint->changeShapeStatus(changeShape, true);
             //changeShape = -1;
             changeShapeCorner = false;
+            paint->changeSelectedStatus(-1);
             break;
         }
         if (startDrawWithBrush)

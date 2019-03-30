@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _DATA_H_
+#define _DATA_H_
 
 #include <opencv2/opencv.hpp>
 
@@ -33,3 +35,7 @@ enum Section
     color = 660,
     other = 1058
 };
+
+
+
+#endif // !_DATA_H_

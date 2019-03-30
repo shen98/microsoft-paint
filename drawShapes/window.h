@@ -39,6 +39,7 @@ private:
     bool selectedSelectBox = false;
     bool drawWithBrush = false;
     bool startDrawWithBrush = false;
+    bool selectedShapes = false;
 
     bool changeShapeCorner = false;
     int changeShape = -1;

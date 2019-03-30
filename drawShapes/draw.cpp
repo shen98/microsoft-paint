@@ -67,7 +67,7 @@ void Draw::drawShapes(cv::Mat& m, vector<MyShape> myShapes)
             cv::Point(myShape.corners[1].x, myShape.corners[1].y), myShape.color, myShape.thickness);
         else if (myShape.type == CIRCLE)
         {
-            shapes->drawEllipse(m, cv::Point(myShape.corners[4].x, myShape.corners[4].y),
+            shapes->drawEllipse(m, cv::Point(myShape.corners.back().x, myShape.corners.back().y),
                 cv::Point(myShape.corners[0].x, myShape.corners[0].y), myShape.color, myShape.thickness);
         }
 
@@ -78,6 +78,12 @@ void Draw::drawShapes(cv::Mat& m, vector<MyShape> myShapes)
                 if (corner.x == -1 || corner.y == -1) continue;
                 cv::circle(m, corner, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);
             }
+        }
+
+        if (myShape.corners.back() != cv::Point(-1, -1)) {
+            double radius = sqrt(pow((myShape.corners.back().x - myShape.corners[4].x), 2) +
+                pow((myShape.corners.back().y - myShape.corners[4].y), 2));
+            cv::circle(m, myShape.corners.back(), radius, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);
         }
     }
 }
