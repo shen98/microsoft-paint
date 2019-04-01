@@ -27,11 +27,12 @@ struct MyShape
     int thickness;
     cv::Scalar color;
     bool finished = false;              //finished drawing and add to windowMat
-    bool completed = false;             
+    bool completed = false;   
+    int distanceFromRotateToCenter;
 
     MyShape(cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point rotate, int type, cv::Scalar color, int thickness, 
-        bool finished = false, cv::Point p5 = cv::Point(-1, -1), bool completed = false)
-        : type(type), thickness(thickness), color(color), finished(finished), completed(completed)
+        bool finished = false, cv::Point p5 = cv::Point(-1, -1), int distanceFromRotateToCenter = -1, bool completed = false)
+        : type(type), thickness(thickness), color(color), finished(finished), completed(completed), distanceFromRotateToCenter(distanceFromRotateToCenter)
     {
         vector<cv::Point> vec{ p1, p2, p3, p4, rotate };
         if (p5 != cv::Point(-1, -1)) vec.push_back(p5);
@@ -77,6 +78,12 @@ private:
     void changeCorner(int indexOfShape, int corner, int mousePosX, int mousePosY);
 
     double getDistance(cv::Point p1, cv::Point p2);
+
+    void changeLeftUpCorner(int indexOfShape, int mousePosX, int mousePosY);
+    void changeRightUpCorner(int indexOfShape, int mousePosX, int mousePosY);
+    void changeLeftBottomCorner(int indexOfShape, int mousePosX, int mousePosY);
+    void changeRightBottomCorner(int indexOfShape, int mousePosX, int mousePosY);
+
 
 private:
     vector<MyShape> myShapes;

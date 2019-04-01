@@ -62,6 +62,7 @@ void Draw::drawShapes(cv::Mat& m, vector<MyShape> myShapes)
     {
         if (!myShape.finished) continue;
         if (myShape.type == RECTANGLE) shapes->drawBox(m, cv::Point(myShape.corners[0].x, myShape.corners[0].y),
+            cv::Point(myShape.corners[3].x, myShape.corners[3].y), cv::Point(myShape.corners[2].x, myShape.corners[2].y),
             cv::Point(myShape.corners[1].x, myShape.corners[1].y), myShape.color, myShape.thickness);
         else if (myShape.type == LINE) shapes->drawLine(m, cv::Point(myShape.corners[0].x, myShape.corners[0].y),
             cv::Point(myShape.corners[1].x, myShape.corners[1].y), myShape.color, myShape.thickness);

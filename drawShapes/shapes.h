@@ -17,6 +17,7 @@ public:
     bool initialShapes();
 
     void drawBox(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness = 1);
+    void Shapes::drawBox(cv::Mat& img, cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Scalar color, int thickness);
     void drawCircle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness = 1);
     void drawRegularTriangle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness = 1);
     void drawRightTriangle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness = 1);

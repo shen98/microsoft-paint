@@ -17,6 +17,14 @@ bool Shapes::initialShapes()
     return true;
 }
 
+void Shapes::drawBox(cv::Mat& img, cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Scalar color, int thickness)
+{
+    drawLine(img, p1, p2, color, thickness);
+    drawLine(img, p2, p4, color, thickness);
+    drawLine(img, p1, p3, color, thickness);
+    drawLine(img, p3, p4, color, thickness);
+}
+
 void Shapes::drawBox(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
 {
     cv::Rect box(startPos, endPos);
