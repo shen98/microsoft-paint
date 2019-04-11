@@ -140,9 +140,9 @@ void Paint::drawWithBrush(cv::Mat& m, cv::Point startPos, cv::Point endPos, int 
     brush->drawWithBrush(m, startPos, endPos, type, color, thickness);
 }
 
-void Paint::rightclicked(cv::Mat& m ,int indexOfShape, int mousePosX, int mousePosY)
+void Paint::rightclicked(cv::Mat& m ,int indexOfShape, int mousePosX, int mousePosY, bool firstTime)
 {
-	rightClick->rightclicked(m, indexOfShape, mousePosX, mousePosY);
+	rightClick->rightclicked(m, indexOfShape, mousePosX, mousePosY, firstTime);
 }
 
 bool Paint::selectedRotate()

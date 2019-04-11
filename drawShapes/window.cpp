@@ -100,7 +100,8 @@ bool Window::initialWindow()
         paint->selectShape(temp, mouseX, mouseY);
         menu->selectColor(temp, mouseX, mouseY);
         paint->checkMousePosOnCorner(temp, mouseX, mouseY);
-		if (rightClicked) paint->rightclicked(temp, changeShape, mouseX, mouseY);
+		if (rightClicked) paint->rightclicked(temp, changeShape, mouseX, mouseY, firstTimeRightClicked);
+		firstTimeRightClicked = false;
         if (menu->getButtonState()[Buttons::selectBox] && menu->startDrawing())
         {
             if (endPos.x != 0 && endPos.y != 0) drawDottedRectangle(temp, startPos, endPos, black, thichLevel);
@@ -375,11 +376,18 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
             menu->changeState(g_prevSelectedShape);
             menu->changeSelectState(false);
             endPos.x = 0; endPos.y = 0;
+			break;
         }
     }
+	break;
 	case cv::EVENT_RBUTTONDOWN:
 	{
-		if (selectedShapes) rightClicked = true;
+		if (selectedShapes) 
+		{
+			firstTimeRightClicked = true;
+			rightClicked = true;
+		}
+		break;
 	}
     }
 }

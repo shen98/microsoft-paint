@@ -42,6 +42,7 @@ private:
     bool selectedShapes = false;
 
 	bool rightClicked = false;					//Display right click box
+	bool firstTimeRightClicked = false;			//Position of right click box
 
     bool changeShapeCorner = false;
     int changeShape = -1;
