@@ -83,12 +83,20 @@ void Shape::drawTempRect(cv::Mat& m, cv::Point p1, cv::Point p2, cv::Scalar colo
     cv::circle(m, p4, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);          //right-up corner
     cv::circle(m, rotate, unselectedCornerSize, defaultShapeColor, unselectedCornerSize, cv::LINE_AA);          //Rotate
 
+	double k1, k2;
+
+	if (p1.x == p3.x) k1 = -1;
+	else k1 = (double)(p1.y - p3.y) / (double)(p1.x - p3.x);               //gradient of line(left bottom - right bottom)
+
+	if (p1.x == p4.x) k2 = -1;
+	else k2 = (double)(p1.y - p4.y) / (double)(p1.x - p4.x);
+
     int d = getDistance(rotate, center);
     if (finished)
     {
         cout << d << endl;
         cout << getDistance(rotate, center) << endl;
-        MyShape curShape(p1, p2, p3, p4, rotate, RECTANGLE, color, thickness, finished, center, d);
+        MyShape curShape(p1, p2, p3, p4, rotate, RECTANGLE, color, thickness, k1, k2, finished, center, d);
         myShapes.push_back(curShape);
     }
 }
@@ -102,7 +110,7 @@ void Shape::drawTempLine(cv::Mat& m, cv::Point p1, cv::Point p2, cv::Scalar colo
 
     if (finished)
     {
-        MyShape curShape(p1, p2, cv::Point(-1, -1), cv::Point(-1, -1), cv::Point(-1, -1), LINE, color, thickness, finished);
+        MyShape curShape(p1, p2, cv::Point(-1, -1), cv::Point(-1, -1), cv::Point(-1, -1), LINE, color, thickness, -1, -1, finished);
         myShapes.push_back(curShape);
     }
 }
@@ -131,7 +139,7 @@ void Shape::drawTempCircle(cv::Mat& m, cv::Point p1, cv::Point p2, cv::Scalar co
 
     if (finished)
     {
-        MyShape curShape(p3, p4, p5, p6, rotate, CIRCLE, color, thickness, finished, p1);
+        MyShape curShape(p3, p4, p5, p6, rotate, CIRCLE, color, thickness, -1, -1, finished, p1);
         myShapes.push_back(curShape);
     }
 }
@@ -258,7 +266,7 @@ void Shape::changeCorner(int indexOfShape, int corner, int mousePosX, int mouseP
         p6.x = myShapes[indexOfShape].corners[ShapeCorners::Center].x + difWidth; p6.y = myShapes[indexOfShape].corners[ShapeCorners::Center].y + difHeight;
 
         myShapes[indexOfShape].corners[ShapeCorners::Left_Up_Corner] = p3;
-        myShapes[indexOfShape].corners[ShapeCorners::Right_Buttom_Corner] = p4;
+        myShapes[indexOfShape].corners[ShapeCorners::Right_Bottom_Corner] = p4;
         myShapes[indexOfShape].corners[ShapeCorners::Left_Bottom_Corner] = p5;
         myShapes[indexOfShape].corners[ShapeCorners::Right_Up_Corner] = p6;
 
@@ -271,25 +279,18 @@ void Shape::changeCorner(int indexOfShape, int corner, int mousePosX, int mouseP
     {
         changeLeftUpCorner(indexOfShape, mousePosX, mousePosY);
     }
-    else if (corner == ShapeCorners::Right_Buttom_Corner)   //Left Up Corner is be fixed
+    else if (corner == ShapeCorners::Right_Bottom_Corner)   //Left Up Corner is be fixed
     {
-        myShapes[indexOfShape].corners[ShapeCorners::Right_Buttom_Corner] = cv::Point(mousePosX, mousePosY);
-        if (myShapes[indexOfShape].corners[ShapeCorners::Right_Up_Corner].x != -1) 
-            myShapes[indexOfShape].corners[ShapeCorners::Right_Up_Corner].x = mousePosX;
-        if (myShapes[indexOfShape].corners[ShapeCorners::Left_Bottom_Corner].y != -1) 
-            myShapes[indexOfShape].corners[ShapeCorners::Left_Bottom_Corner].y = mousePosY;
+		changeRightBottomCorner(indexOfShape, mousePosX, mousePosY);
+        
     }
     else if (corner == ShapeCorners::Left_Bottom_Corner)    //Right Up Corner is be fixed
     {
-        myShapes[indexOfShape].corners[ShapeCorners::Left_Bottom_Corner] = cv::Point(mousePosX, mousePosY);
-        myShapes[indexOfShape].corners[ShapeCorners::Left_Up_Corner].x = mousePosX;
-        myShapes[indexOfShape].corners[ShapeCorners::Right_Buttom_Corner].y = mousePosY;
+		changeLeftBottomCorner(indexOfShape, mousePosX, mousePosY);
     }
     else if (corner == ShapeCorners::Right_Up_Corner)       //Left Bottom Corner is be fixed
     {
-        myShapes[indexOfShape].corners[ShapeCorners::Right_Up_Corner] = cv::Point(mousePosX, mousePosY);
-        myShapes[indexOfShape].corners[ShapeCorners::Right_Buttom_Corner].x = mousePosX;
-        myShapes[indexOfShape].corners[ShapeCorners::Left_Up_Corner].y = mousePosY;
+		changeRightUpCorner(indexOfShape, mousePosX, mousePosY);
     }
     else if (corner == ShapeCorners::Rotate)
     {
@@ -312,19 +313,23 @@ void Shape::changeCorner(int indexOfShape, int corner, int mousePosX, int mouseP
         myShape.corners[ShapeCorners::Right_Up_Corner].y = upper.y + cos * 0.5 * width;
         myShape.corners[ShapeCorners::Left_Up_Corner].x = upper.x + sin * 0.5 * width;
         myShape.corners[ShapeCorners::Left_Up_Corner].y = upper.y - cos * 0.5 * width;
-        myShape.corners[ShapeCorners::Right_Buttom_Corner].x = lower.x - sin * 0.5 * width;
-        myShape.corners[ShapeCorners::Right_Buttom_Corner].y = lower.y + cos * 0.5 * width;
+        myShape.corners[ShapeCorners::Right_Bottom_Corner].x = lower.x - sin * 0.5 * width;
+        myShape.corners[ShapeCorners::Right_Bottom_Corner].y = lower.y + cos * 0.5 * width;
         myShape.corners[ShapeCorners::Left_Bottom_Corner].x = lower.x + sin * 0.5 * width;
         myShape.corners[ShapeCorners::Left_Bottom_Corner].y = lower.y - cos * 0.5 * width;
+
+		myShape.k1 = (double)(myShape.corners[ShapeCorners::Left_Up_Corner].y - myShape.corners[ShapeCorners::Left_Bottom_Corner].y) /
+			(double)(myShape.corners[ShapeCorners::Left_Up_Corner].x - myShape.corners[ShapeCorners::Left_Bottom_Corner].x);
+		myShape.k2 = (double)(myShape.corners[ShapeCorners::Left_Up_Corner].y - myShape.corners[ShapeCorners::Right_Up_Corner].y) /
+			(double)(myShape.corners[ShapeCorners::Left_Up_Corner].x - myShape.corners[ShapeCorners::Right_Up_Corner].x);
     }
 
     if (corner != ShapeCorners::Rotate) {
-        myShapes[indexOfShape].corners[ShapeCorners::Rotate].x = (myShapes[indexOfShape].corners[ShapeCorners::Left_Up_Corner].x + myShapes[indexOfShape].corners[ShapeCorners::Right_Buttom_Corner].x) / 2;
+        myShapes[indexOfShape].corners[ShapeCorners::Rotate].x = (myShapes[indexOfShape].corners[ShapeCorners::Left_Up_Corner].x + myShapes[indexOfShape].corners[ShapeCorners::Right_Bottom_Corner].x) / 2;
         myShapes[indexOfShape].corners[ShapeCorners::Rotate].y = min(myShapes[indexOfShape].corners[ShapeCorners::Left_Up_Corner].y, myShapes[indexOfShape].corners[Left_Bottom_Corner].y)
             - abs(myShapes[indexOfShape].corners[ShapeCorners::Left_Up_Corner].y - myShapes[indexOfShape].corners[ShapeCorners::Left_Bottom_Corner].y) / 4;
     
-        myShapes[indexOfShape].corners[ShapeCorners::Center].x = (myShapes[indexOfShape].corners[ShapeCorners::Left_Up_Corner].x + myShapes[indexOfShape].corners[ShapeCorners::Right_Up_Corner].x) / 2;
-        myShapes[indexOfShape].corners[ShapeCorners::Center].y = (myShapes[indexOfShape].corners[ShapeCorners::Left_Up_Corner].y + myShapes[indexOfShape].corners[ShapeCorners::Left_Bottom_Corner].y) / 2;
+		ReCenter(indexOfShape);
     }
 }
 
@@ -334,28 +339,161 @@ double Shape::getDistance(cv::Point p1, cv::Point p2)
         + pow((p1.x - p2.x), 2));
 }
 
-void Shape::changeLeftUpCorner(int indexOfShape, int mousePosX, int mousePosY)
+void Shape::changeLeftUpCorner(int indexOfShape, int mousePosX, int mousePosY)		//right bottom is fixed
 {
-    myShapes[indexOfShape].corners[ShapeCorners::Left_Up_Corner] = cv::Point(mousePosX, mousePosY);
-    if (myShapes[indexOfShape].corners[ShapeCorners::Left_Bottom_Corner].x != -1)
-        myShapes[indexOfShape].corners[ShapeCorners::Left_Bottom_Corner].x = mousePosX;
-    if (myShapes[indexOfShape].corners[ShapeCorners::Right_Up_Corner].y != -1)
-        myShapes[indexOfShape].corners[ShapeCorners::Right_Up_Corner].y = mousePosY;
+	MyShape& myShape = myShapes[indexOfShape];
+	double c1, c2, c;
+	if (myShape.k1 == -1)
+	{
+		myShape.corners[ShapeCorners::Left_Bottom_Corner].x = mousePosX;
+		myShape.corners[ShapeCorners::Right_Up_Corner].y = mousePosY;
+		myShape.corners[ShapeCorners::Left_Up_Corner] = cv::Point(mousePosX, mousePosY);
+		return;
+	}
 
+	if (myShape.k2 == -1)
+	{
+		cout << 1 << endl;
 
+	}
+	
+	c1 = myShape.corners[ShapeCorners::Right_Bottom_Corner].y - myShape.k1 * myShape.corners[ShapeCorners::Right_Bottom_Corner].x;
+	c2 = myShape.corners[ShapeCorners::Right_Bottom_Corner].y - myShape.k2 * myShape.corners[ShapeCorners::Right_Bottom_Corner].x;
+	c = mousePosY - myShape.k2 * mousePosX;
+
+	if (myShapes[indexOfShape].corners[ShapeCorners::Left_Bottom_Corner].x != -1)
+	{
+		myShape.corners[ShapeCorners::Left_Bottom_Corner].x = (c - c1) / (myShape.k1 - myShape.k2);
+		myShape.corners[ShapeCorners::Left_Bottom_Corner].y = myShape.k2*myShape.corners[ShapeCorners::Left_Bottom_Corner].x + c;
+	}
+
+	c = mousePosY - myShape.k1*mousePosX;
+
+	if (myShapes[indexOfShape].corners[ShapeCorners::Right_Up_Corner].y != -1)
+	{
+		myShape.corners[ShapeCorners::Right_Up_Corner].x = (c - c2) / (myShape.k2 - myShape.k1);
+		myShape.corners[ShapeCorners::Right_Up_Corner].y = myShape.k1*myShape.corners[ShapeCorners::Right_Up_Corner].x + c;
+	}
+	myShape.corners[ShapeCorners::Left_Up_Corner] = cv::Point(mousePosX, mousePosY);
+
+	ReCenter(indexOfShape);
 }
 
 void Shape::changeRightUpCorner(int indexOfShape, int mousePosX, int mousePosY)
 {
+	MyShape& myShape = myShapes[indexOfShape];
+	double c1, c2, c;
+	if (myShape.k1 == -1)
+	{
+		myShapes[indexOfShape].corners[ShapeCorners::Right_Up_Corner] = cv::Point(mousePosX, mousePosY);
+		myShapes[indexOfShape].corners[ShapeCorners::Right_Bottom_Corner].x = mousePosX;
+		myShapes[indexOfShape].corners[ShapeCorners::Left_Up_Corner].y = mousePosY;
+		return;
+	}
 
+	if (myShape.k2 == -1)
+	{
+		cout << 1 << endl;
+
+	}
+
+	c1 = myShape.corners[ShapeCorners::Left_Bottom_Corner].y - myShape.k1 * myShape.corners[ShapeCorners::Left_Bottom_Corner].x;
+	c2 = myShape.corners[ShapeCorners::Left_Bottom_Corner].y - myShape.k2 * myShape.corners[ShapeCorners::Left_Bottom_Corner].x;
+	c = mousePosY - myShape.k2 * mousePosX;
+
+	myShape.corners[ShapeCorners::Left_Up_Corner].x = (c - c1) / (myShape.k1 - myShape.k2);
+	myShape.corners[ShapeCorners::Left_Up_Corner].y = myShape.k2*myShape.corners[ShapeCorners::Left_Up_Corner].x + c;
+
+	c = mousePosY - myShape.k1*mousePosX;
+
+	myShape.corners[ShapeCorners::Right_Bottom_Corner].x = (c - c2) / (myShape.k2 - myShape.k1);
+	myShape.corners[ShapeCorners::Right_Bottom_Corner].y = myShape.k1*myShape.corners[ShapeCorners::Right_Bottom_Corner].x + c;
+
+	myShape.corners[ShapeCorners::Right_Up_Corner] = cv::Point(mousePosX, mousePosY);
+
+	ReCenter(indexOfShape);
 }
 
 void Shape::changeLeftBottomCorner(int indexOfShape, int mousePosX, int mousePosY)
 {
+	MyShape& myShape = myShapes[indexOfShape];
+	double c1, c2, c;
+	if (myShape.k1 == -1)
+	{
+		myShapes[indexOfShape].corners[ShapeCorners::Left_Bottom_Corner] = cv::Point(mousePosX, mousePosY);
+		myShapes[indexOfShape].corners[ShapeCorners::Left_Up_Corner].x = mousePosX;
+		myShapes[indexOfShape].corners[ShapeCorners::Right_Bottom_Corner].y = mousePosY;
+		return;
+	}
 
+	if (myShape.k2 == -1)
+	{
+		cout << 1 << endl;
+
+	}
+
+	c1 = myShape.corners[ShapeCorners::Right_Up_Corner].y - myShape.k1 * myShape.corners[ShapeCorners::Right_Up_Corner].x;
+	c2 = myShape.corners[ShapeCorners::Right_Up_Corner].y - myShape.k2 * myShape.corners[ShapeCorners::Right_Up_Corner].x;
+	c = mousePosY - myShape.k2 * mousePosX;
+
+	myShape.corners[ShapeCorners::Right_Bottom_Corner].x = (c - c1) / (myShape.k1 - myShape.k2);
+	myShape.corners[ShapeCorners::Right_Bottom_Corner].y = myShape.k2*myShape.corners[ShapeCorners::Right_Bottom_Corner].x + c;
+
+	c = mousePosY - myShape.k1*mousePosX;
+
+	myShape.corners[ShapeCorners::Left_Up_Corner].x = (c - c2) / (myShape.k2 - myShape.k1);
+	myShape.corners[ShapeCorners::Left_Up_Corner].y = myShape.k1*myShape.corners[ShapeCorners::Left_Up_Corner].x + c;
+
+	myShape.corners[ShapeCorners::Left_Bottom_Corner] = cv::Point(mousePosX, mousePosY);
+
+	ReCenter(indexOfShape);
 }
 
 void Shape::changeRightBottomCorner(int indexOfShape, int mousePosX, int mousePosY)
 {
+	MyShape& myShape = myShapes[indexOfShape];
+	double c1, c2, c;
+	if (myShape.k1 == -1)
+	{
+		myShapes[indexOfShape].corners[ShapeCorners::Right_Bottom_Corner] = cv::Point(mousePosX, mousePosY);
+		if (myShapes[indexOfShape].corners[ShapeCorners::Right_Up_Corner].x != -1)
+			myShapes[indexOfShape].corners[ShapeCorners::Right_Up_Corner].x = mousePosX;
+		if (myShapes[indexOfShape].corners[ShapeCorners::Left_Bottom_Corner].y != -1)
+			myShapes[indexOfShape].corners[ShapeCorners::Left_Bottom_Corner].y = mousePosY;
+		return;
+	}
 
+	if (myShape.k2 == -1)
+	{
+		cout << 1 << endl;
+
+	}
+
+	c1 = myShape.corners[ShapeCorners::Left_Up_Corner].y - myShape.k1 * myShape.corners[ShapeCorners::Left_Up_Corner].x;
+	c2 = myShape.corners[ShapeCorners::Left_Up_Corner].y - myShape.k2 * myShape.corners[ShapeCorners::Left_Up_Corner].x;
+	c = mousePosY - myShape.k2 * mousePosX;
+
+	if (myShapes[indexOfShape].corners[ShapeCorners::Right_Up_Corner].x != -1)
+	{
+		myShape.corners[ShapeCorners::Right_Up_Corner].x = (c - c1) / (myShape.k1 - myShape.k2);
+		myShape.corners[ShapeCorners::Right_Up_Corner].y = myShape.k2*myShape.corners[ShapeCorners::Right_Up_Corner].x + c;
+	}
+
+	c = mousePosY - myShape.k1*mousePosX;
+
+	if (myShapes[indexOfShape].corners[ShapeCorners::Left_Bottom_Corner].y != -1)
+	{
+		myShape.corners[ShapeCorners::Left_Bottom_Corner].x = (c - c2) / (myShape.k2 - myShape.k1);
+		myShape.corners[ShapeCorners::Left_Bottom_Corner].y = myShape.k1*myShape.corners[ShapeCorners::Left_Bottom_Corner].x + c;
+	}
+	myShape.corners[ShapeCorners::Right_Bottom_Corner] = cv::Point(mousePosX, mousePosY);
+
+	ReCenter(indexOfShape);
 }
+
+void Shape::ReCenter(int indexOfShape)
+{
+	myShapes[indexOfShape].corners[ShapeCorners::Center].x = (myShapes[indexOfShape].corners[ShapeCorners::Left_Up_Corner].x + myShapes[indexOfShape].corners[ShapeCorners::Right_Bottom_Corner].x) / 2;
+	myShapes[indexOfShape].corners[ShapeCorners::Center].y = (myShapes[indexOfShape].corners[ShapeCorners::Left_Up_Corner].y + myShapes[indexOfShape].corners[ShapeCorners::Right_Bottom_Corner].y) / 2;
+}
+

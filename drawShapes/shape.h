@@ -12,7 +12,7 @@
 enum ShapeCorners
 {
     Left_Up_Corner,
-    Right_Buttom_Corner,
+    Right_Bottom_Corner,
     Left_Bottom_Corner,
     Right_Up_Corner,
     Rotate,
@@ -29,10 +29,12 @@ struct MyShape
     bool finished = false;              //finished drawing and add to windowMat
     bool completed = false;   
     int distanceFromRotateToCenter;
+	double k1, k2;						//k1 - gradient of left up - left bottom && right up - right bottom
+										//k2 - gradient of left up - right up && left bottom - right bottom
 
-    MyShape(cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point rotate, int type, cv::Scalar color, int thickness, 
+    MyShape(cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Point rotate, int type, cv::Scalar color, int thickness, double k1, double k2,
         bool finished = false, cv::Point p5 = cv::Point(-1, -1), int distanceFromRotateToCenter = -1, bool completed = false)
-        : type(type), thickness(thickness), color(color), finished(finished), completed(completed), distanceFromRotateToCenter(distanceFromRotateToCenter)
+        : type(type), thickness(thickness), color(color), k1(k1), k2(k2), finished(finished), completed(completed), distanceFromRotateToCenter(distanceFromRotateToCenter)
     {
         vector<cv::Point> vec{ p1, p2, p3, p4, rotate };
         if (p5 != cv::Point(-1, -1)) vec.push_back(p5);
@@ -84,6 +86,7 @@ private:
     void changeLeftBottomCorner(int indexOfShape, int mousePosX, int mousePosY);
     void changeRightBottomCorner(int indexOfShape, int mousePosX, int mousePosY);
 
+	void ReCenter(int indexOfShape);
 
 private:
     vector<MyShape> myShapes;
