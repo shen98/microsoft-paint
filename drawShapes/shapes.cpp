@@ -1,23 +1,12 @@
 #include "stdafx.h"
 #include "shapes.h"
 
-Shapes::Shapes()
-{
-}
-
-Shapes::~Shapes()
-{
-
-}
-
-
-
-bool Shapes::initialShapes()
+bool initialShapes()
 {
     return true;
 }
 
-void Shapes::drawBox(cv::Mat& img, cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Scalar color, int thickness)
+void drawBox(cv::Mat& img, cv::Point p1, cv::Point p2, cv::Point p3, cv::Point p4, cv::Scalar color, int thickness)
 {
     drawLine(img, p1, p2, color, thickness);
     drawLine(img, p2, p4, color, thickness);
@@ -25,7 +14,7 @@ void Shapes::drawBox(cv::Mat& img, cv::Point p1, cv::Point p2, cv::Point p3, cv:
     drawLine(img, p3, p4, color, thickness);
 }
 
-void Shapes::drawBox(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
+void drawBox(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
 {
     cv::Rect box(startPos, endPos);
     if (box.width < 0)
@@ -42,12 +31,12 @@ void Shapes::drawBox(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Sca
     cv::rectangle(img, box.tl(), box.br(), color, thickness, cv::LINE_AA);
 }
 
-void Shapes::drawCircle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
+void drawCircle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
 {
     cv::circle(img, startPos, (int)sqrt(pow(startPos.x - endPos.x, 2) + pow(startPos.y - endPos.y, 2)), color, thickness, cv::LINE_AA);
 }
 
-void Shapes::drawRegularTriangle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
+void drawRegularTriangle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
 {
     vector<cv::Point> vertices;
     vertices.push_back(endPos);
@@ -62,28 +51,28 @@ void Shapes::drawRegularTriangle(cv::Mat& img, cv::Point startPos, cv::Point end
     cv::polylines(img, vertices, true, color, thickness, cv::LINE_AA);
 }
 
-void Shapes::drawRightTriangle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
+void drawRightTriangle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
 {
 
 }
 
-void Shapes::drawLine(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
+void drawLine(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
 {
     cv::line(img, startPos, endPos, color, thickness, cv::LINE_AA);
 }
 
-void Shapes::drawPolygon(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
+void drawPolygon(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
 {
     drawLine(img, startPos, endPos, color, thickness);
 }
 
-void Shapes::drawEllipse(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
+void drawEllipse(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
 {
     cv::Size size(abs(endPos.x - startPos.x), abs(endPos.y - startPos.y));
     cv::ellipse(img, startPos, size, 0, 0, 460, color, thickness, cv::LINE_AA);
 }
 
-void Shapes::drawRoundedRectangle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
+void drawRoundedRectangle(cv::Mat& img, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness)
 {
     int cornerRadius = abs(startPos.x - endPos.x) / 4;
     cv::Point p1 = cv::Point(startPos.x - abs(endPos.x - startPos.x), startPos.y - abs(endPos.y - startPos.y) - 1);
@@ -102,7 +91,7 @@ void Shapes::drawRoundedRectangle(cv::Mat& img, cv::Point startPos, cv::Point en
     cv::ellipse(img, p4 + cv::Point(cornerRadius, -cornerRadius), cv::Size(cornerRadius, cornerRadius), 90.0, 0, 90, color, thickness, cv::LINE_AA);
 }
 
-void Shapes::drawDottedLine(cv::Mat& m, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness /*= 1*/)
+void drawDottedLine(cv::Mat& m, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness /*= 1*/)
 {
     cv::LineIterator it(m, startPos, endPos);
 
@@ -117,7 +106,7 @@ void Shapes::drawDottedLine(cv::Mat& m, cv::Point startPos, cv::Point endPos, cv
     }
 }
 
-void Shapes::drawDottedRectangle(cv::Mat& m, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness /*= 1*/)
+void drawDottedRectangle(cv::Mat& m, cv::Point startPos, cv::Point endPos, cv::Scalar color, int thickness /*= 1*/)
 {
     cv::Point p1 = startPos;
     cv::Point p2 = cv::Point(endPos.x, startPos.y);
@@ -129,9 +118,3 @@ void Shapes::drawDottedRectangle(cv::Mat& m, cv::Point startPos, cv::Point endPo
     drawDottedLine(m, p2, p4, color);
     drawDottedLine(m, p3, p4, color);
 }
-
-void Shapes::changeColor(cv::Scalar color)
-{
-    color = color;
-}
-

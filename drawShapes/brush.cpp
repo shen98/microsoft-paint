@@ -13,12 +13,6 @@ Brush::~Brush()
 
 bool Brush::initialize(cv::Mat& m)
 {
-    shapes = new Shapes();
-    if (!shapes)
-    {
-        return false;
-    }
-
     srand(static_cast <unsigned> (time(NULL)));
 
     return true;
@@ -62,7 +56,7 @@ void Brush::drawWithBrush(cv::Mat& m, cv::Point startPos, cv::Point endPos, int 
 void Brush::selectBrush(cv::Mat& m, int mousePosX, int mousePosY)
 {
     int startY = brushStartY + brushOffsetHeight * 2 + brushTextHeight + brushRectHeight + 1;
-    shapes->drawBox(m, cv::Point(brushStartX + brushOffsetWidth, startY),
+    drawBox(m, cv::Point(brushStartX + brushOffsetWidth, startY),
         cv::Point(brushStartX + brushOffsetWidth + brushPopUpWidth, startY + brushPopUpHeight), white, -1);
 
     for (int i = 0; i < brushName.size(); ++i)
@@ -78,7 +72,7 @@ void Brush::selectBrush(cv::Mat& m, int mousePosX, int mousePosY)
 
     int index = (mousePosY - startY) / brushRectHeight;
 
-    shapes->drawBox(m, cv::Point(brushStartX + brushOffsetWidth, startY + index * brushRectHeight),
+    drawBox(m, cv::Point(brushStartX + brushOffsetWidth, startY + index * brushRectHeight),
         cv::Point(brushStartX + brushOffsetWidth + brushPopUpWidth, startY + (index + 1) * brushRectHeight), popUpEdgeColor);
 }
 
@@ -103,10 +97,10 @@ std::vector<MyBrush> Brush::getBrushes()
 
 void Brush::updateBrushType(cv::Mat& m, int type)
 {
-    shapes->drawBox(m, cv::Point(brushStartX + brushOffsetWidth, brushStartY + brushOffsetHeight * 2 + brushTextHeight),
+    drawBox(m, cv::Point(brushStartX + brushOffsetWidth, brushStartY + brushOffsetHeight * 2 + brushTextHeight),
         cv::Point(brushStartX + brushOffsetWidth + brushRectWidth, brushStartY + brushOffsetHeight * 2 + brushTextHeight + brushRectHeight), white, -1);
 
-    shapes->drawBox(m, cv::Point(brushStartX + brushOffsetWidth, brushStartY + brushOffsetHeight * 2 + brushTextHeight),
+    drawBox(m, cv::Point(brushStartX + brushOffsetWidth, brushStartY + brushOffsetHeight * 2 + brushTextHeight),
         cv::Point(brushStartX + brushOffsetWidth + brushRectWidth, brushStartY + brushOffsetHeight * 2 + brushTextHeight + brushRectHeight), black, 1);
 
     cv::putText(m, brushName[type], cv::Point(brushStartX + brushOffsetWidth + brushTextOffsetWidth,

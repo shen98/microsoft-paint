@@ -41,11 +41,12 @@ private:
     bool startDrawWithBrush = false;
     bool selectedShapes = false;
 
+	bool rightClicked = false;					//Display right click box
+
     bool changeShapeCorner = false;
     int changeShape = -1;
 
     Menu* menu;
-    Shapes* shapes;
     History* history;
     Image* image;
     Paint* paint;

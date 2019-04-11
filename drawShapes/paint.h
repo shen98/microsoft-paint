@@ -5,6 +5,7 @@
 #include "draw.h"
 #include "shape.h"
 #include "brush.h"
+#include "rightClick.h"
 #include <algorithm>
 
 class Paint
@@ -35,10 +36,13 @@ public:
 
     void drawWithBrush(cv::Mat& m, cv::Point startPos, cv::Point endPos, int type, cv::Scalar color, int thickness = 1);
 
+	void rightclicked(cv::Mat& m, int indexOfShape, int mousePosX, int mousePosY);
+
 private:
     Draw* draw;
     Shape* shape;
     Brush* brush;
+	RightClick* rightClick;
 };
 
 #endif // !_PAINT_H_

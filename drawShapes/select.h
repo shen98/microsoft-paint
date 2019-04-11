@@ -25,8 +25,6 @@ private:
     const int selectBoxOffsetHeight = 10;
 
     cv::Scalar black = CV_RGB(0, 0, 0);
-
-    Shapes* shape;
 };
 
 #endif

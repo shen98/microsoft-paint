@@ -43,6 +43,20 @@ bool Paint::initialize(cv::Mat& m, int height, int width)
         return false;
     }
 
+	rightClick = new RightClick();
+	if (!rightClick)
+	{
+		cout << "Cannot create RightClick object." << endl;
+		return false;
+	}
+
+	result = rightClick->initialize();
+	if (!result)
+	{
+		cout << "Cannot initialize RightClick object." << endl;
+		return false;
+	}
+
     return true;
 }
 
@@ -124,6 +138,11 @@ void Paint::changeSelectedStatus(int status)
 void Paint::drawWithBrush(cv::Mat& m, cv::Point startPos, cv::Point endPos, int type, cv::Scalar color, int thickness /*= 1*/)
 {
     brush->drawWithBrush(m, startPos, endPos, type, color, thickness);
+}
+
+void Paint::rightclicked(cv::Mat& m ,int indexOfShape, int mousePosX, int mousePosY)
+{
+	rightClick->rightclicked(m, indexOfShape, mousePosX, mousePosY);
 }
 
 bool Paint::selectedRotate()

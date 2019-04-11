@@ -28,7 +28,6 @@ private:
     cv::Scalar popUpEdgeColor = CV_RGB(135, 206, 235);
     cv::Scalar popUpFillColor = CV_RGB(230, 230, 255);
 
-    Shapes* shape;
 };
 
 #endif

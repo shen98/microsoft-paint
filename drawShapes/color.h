@@ -55,7 +55,6 @@ private:
     cv::Scalar black = CV_RGB(0, 0, 0);
     cv::Scalar white = CV_RGB(255,255,255);
     cv::Scalar colorOne, colorTwo;
-    Shapes* shape;
 };
 
 #endif // !_COLOR_H_

@@ -13,19 +13,15 @@ Thickness::~Thickness()
 
 bool Thickness::initialize()
 {
-    shape = new Shapes();
-    if (!shape)
-    {
-        return false;
-    }
-}
+	return true;
+}	
 
 void Thickness::initialThickness(cv::Mat& m)
 {
     int height = 0;
     for (int i = 0; i < 5; ++i)
     {
-        shape->drawBox(m, cv::Point(600 + g_MenuOffsetWidth, iconHeight + g_MenuOffsetHeight + shapeOffsetHeight * i + (i + 1) * 1 + height),
+        drawBox(m, cv::Point(600 + g_MenuOffsetWidth, iconHeight + g_MenuOffsetHeight + shapeOffsetHeight * i + (i + 1) * 1 + height),
             cv::Point(660 - g_MenuOffsetWidth, iconHeight + g_MenuOffsetHeight + shapeOffsetHeight * i + (2 * i + 2) * 1 + height), CV_RGB(0, 0, 0), -1);
         height += i + 1;
     }
@@ -34,12 +30,12 @@ void Thickness::initialThickness(cv::Mat& m)
 void Thickness::selectThickness(cv::Mat& m, int mousePosX, int mousePosY, int selected)
 {
     int startX = Section::thick + g_MenuOffsetWidth, startY = iconHeight + g_MenuOffsetHeight + thicknessHeight;
-    shape->drawBox(m, cv::Point(startX, startY), cv::Point(startX + popUpWidth, startY + popUpHeight), CV_RGB(255,255,255), -1);
-    shape->drawBox(m, cv::Point(startX, startY), cv::Point(startX + popUpWidth, startY + popUpHeight), popUpEdgeColor);
+    drawBox(m, cv::Point(startX, startY), cv::Point(startX + popUpWidth, startY + popUpHeight), CV_RGB(255,255,255), -1);
+    drawBox(m, cv::Point(startX, startY), cv::Point(startX + popUpWidth, startY + popUpHeight), popUpEdgeColor);
 
     for (int i = 0; i < 4; ++i)
     {
-        shape->drawBox(m, cv::Point(startX + g_MenuOffsetWidth, startY + i * 50 + (25 - (i + 1))), cv::Point(startX + popUpWidth - g_MenuOffsetWidth, startY + i * 50 + 25 + i - 1), CV_RGB(0, 0, 0), -1);
+        drawBox(m, cv::Point(startX + g_MenuOffsetWidth, startY + i * 50 + (25 - (i + 1))), cv::Point(startX + popUpWidth - g_MenuOffsetWidth, startY + i * 50 + 25 + i - 1), CV_RGB(0, 0, 0), -1);
     }
 
     if (selected != -1)
@@ -57,7 +53,7 @@ void Thickness::selectThickness(cv::Mat& m, int mousePosX, int mousePosY, int se
     if (mousePosX < startX || mousePosX > startX + popUpWidth || mousePosY < startY || mousePosY > startY + popUpHeight) return;
 
     int index = (mousePosY - startY) / 50;
-    shape->drawBox(m, cv::Point(startX + popUpOffsetWidth, startY + index * 50 + popUpOffsetHeight),
+    drawBox(m, cv::Point(startX + popUpOffsetWidth, startY + index * 50 + popUpOffsetHeight),
         cv::Point(startX + popUpWidth - popUpOffsetWidth, startY + (index + 1) * 50 - popUpOffsetHeight), popUpEdgeColor);
 }
 

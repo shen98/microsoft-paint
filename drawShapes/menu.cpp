@@ -4,7 +4,6 @@
 Menu::Menu()
 {
     g_buttonState = vector<bool>(g_ButtonNum, false);
-    shapes = NULL;
 }
 
 Menu::~Menu()
@@ -15,13 +14,6 @@ Menu::~Menu()
 bool Menu::initialize(cv::Mat& m, int width)
 {
     bool result;
-
-    shapes = new Shapes();
-    if (!shapes)
-    {
-        cout << "Cannot create shape object." << endl;
-        return false;
-    }
 
     thickness = new Thickness();
     if (!thickness)

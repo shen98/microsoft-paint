@@ -153,6 +153,7 @@
     <ClInclude Include="image.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="paint.h" />
+    <ClInclude Include="rightClick.h" />
     <ClInclude Include="select.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="shapes.h" />
@@ -170,6 +171,7 @@
     <ClCompile Include="image.cpp" />
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="paint.cpp" />
+    <ClCompile Include="rightClick.cpp" />
     <ClCompile Include="select.cpp" />
     <ClCompile Include="shape.cpp" />
     <ClCompile Include="shapes.cpp" />

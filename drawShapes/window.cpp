@@ -51,18 +51,6 @@ bool Window::initialize(int height, int width)
         return false;
     }
 
-    shapes = new Shapes();
-    if (!shapes)
-    {
-        return false;
-    }
-
-    result = shapes->initialShapes();
-    if (!result)
-    {
-        return false;
-    }
-
     paint = new Paint();
     if (!paint)
     {
@@ -112,14 +100,14 @@ bool Window::initialWindow()
         paint->selectShape(temp, mouseX, mouseY);
         menu->selectColor(temp, mouseX, mouseY);
         paint->checkMousePosOnCorner(temp, mouseX, mouseY);
-        
+		if (rightClicked) paint->rightclicked(temp, changeShape, mouseX, mouseY);
         if (menu->getButtonState()[Buttons::selectBox] && menu->startDrawing())
         {
-            if (endPos.x != 0 && endPos.y != 0) shapes->drawDottedRectangle(temp, startPos, endPos, black, thichLevel);
+            if (endPos.x != 0 && endPos.y != 0) drawDottedRectangle(temp, startPos, endPos, black, thichLevel);
         }
         else if (menu->getButtonState()[Buttons::rectangle] && menu->startDrawing())
         {
-            //if (endPos.x != 0 && endPos.y != 0) shapes->drawBox(temp, startPos, endPos, drawingColor, thichLevel);
+            //if (endPos.x != 0 && endPos.y != 0) drawBox(temp, startPos, endPos, drawingColor, thichLevel);
             if (endPos.x != 0 && endPos.y != 0) paint->drawTempShape(RECTANGLE, temp, startPos, endPos, drawingColor, thichLevel);
         }
         else if (menu->getButtonState()[Buttons::line] && menu->startDrawing())
@@ -132,15 +120,15 @@ bool Window::initialWindow()
         }
         else if (menu->getButtonState()[Buttons::roundedRectangle] && menu->startDrawing())
         {
-            if (endPos.x != 0 && endPos.y != 0) shapes->drawRoundedRectangle(temp, startPos, endPos, drawingColor, thichLevel);
+            if (endPos.x != 0 && endPos.y != 0) drawRoundedRectangle(temp, startPos, endPos, drawingColor, thichLevel);
         }
         else if (menu->getButtonState()[Buttons::triangle] && menu->startDrawing())
         {
-            if (endPos.x != 0 && endPos.y != 0) shapes->drawRegularTriangle(temp, startPos, endPos, drawingColor, thichLevel);
+            if (endPos.x != 0 && endPos.y != 0) drawRegularTriangle(temp, startPos, endPos, drawingColor, thichLevel);
         }
         else if (menu->getButtonState()[Buttons::polygon] && menu->startDrawing())
         {
-            if (endPos.x != 0 && endPos.y != 0) shapes->drawPolygon(temp, startPos, endPos, drawingColor, thichLevel);
+            if (endPos.x != 0 && endPos.y != 0) drawPolygon(temp, startPos, endPos, drawingColor, thichLevel);
         }
         else if (menu->getButtonState()[Buttons::thickness])
         {
@@ -181,7 +169,7 @@ bool Window::initialWindow()
         }   
         else if (key == 13 && menu->getButtonState()[Buttons::polygon])         //enter key
         {
-            if (endPos.x != 0 && endPos.y != 0) shapes->drawPolygon(windowMat, endPos, initPos, drawingColor);
+            if (endPos.x != 0 && endPos.y != 0) drawPolygon(windowMat, endPos, initPos, drawingColor);
             history->addHistory(windowMat, changeShape);
         }
         else if (key == 13 && selectedSelectBox)
@@ -362,7 +350,7 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
             endPos = cv::Point(endPos.x - windowOffsetWidth, endPos.y - g_MenuHeight - windowOffsetHeight);
             if (menu->getButtonState()[Buttons::polygon])
             {
-                shapes->drawPolygon(windowMat, startPos, endPos, drawingColor, thichLevel);
+                drawPolygon(windowMat, startPos, endPos, drawingColor, thichLevel);
                 //history->addHistory(windowMat, changeShape);
                 startPos = endPos;
                 return;
@@ -370,11 +358,11 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
             if (menu->getButtonState()[Buttons::rectangle]) paint->drawTempShape(RECTANGLE, windowMat, startPos, endPos, drawingColor, thichLevel, true);
             else if (menu->getButtonState()[Buttons::line]) paint->drawTempShape(LINE, windowMat, startPos, endPos, drawingColor, thichLevel, true);
             else if (menu->getButtonState()[Buttons::ellipse]) paint->drawTempShape(CIRCLE, windowMat, startPos, endPos, drawingColor, thichLevel, true);
-            else if (menu->getButtonState()[Buttons::roundedRectangle]) shapes->drawRoundedRectangle(windowMat, startPos, endPos, drawingColor, thichLevel);
-            else if (menu->getButtonState()[Buttons::triangle]) shapes->drawRegularTriangle(windowMat, startPos, endPos, drawingColor, thichLevel);
+            else if (menu->getButtonState()[Buttons::roundedRectangle]) drawRoundedRectangle(windowMat, startPos, endPos, drawingColor, thichLevel);
+            else if (menu->getButtonState()[Buttons::triangle]) drawRegularTriangle(windowMat, startPos, endPos, drawingColor, thichLevel);
             else if (menu->getButtonState()[Buttons::selectBox])
             {
-                shapes->drawDottedRectangle(windowMat, startPos, endPos, drawingColor, thichLevel);
+                drawDottedRectangle(windowMat, startPos, endPos, drawingColor, thichLevel);
                 selectedSelectBox = true;
                 menu->changeState(Buttons::cancel);
                 menu->changeDrawingState(false);
@@ -389,6 +377,10 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
             endPos.x = 0; endPos.y = 0;
         }
     }
+	case cv::EVENT_RBUTTONDOWN:
+	{
+		if (selectedShapes) rightClicked = true;
+	}
     }
 }
 

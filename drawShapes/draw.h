@@ -19,8 +19,6 @@ private:
     void drawShapes(cv::Mat& m, vector<MyShape> myShapes);
     void drawBrushes(cv::Mat& m, vector<MyBrush> myBrushes);
 private:
-    Shapes* shapes;
-
     cv::Scalar defaultShapeColor = CV_RGB(30, 144, 255);
 
     const int unselectedCornerSize = 2;

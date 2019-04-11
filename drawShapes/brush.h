@@ -48,7 +48,6 @@ private:
 
     vector<MyBrush> myBrushes;
 
-    Shapes* shapes;
     const int brushOffsetHeight = 8;
     const int brushOffsetWidth = 10;
     const int brushStartX = 250;

@@ -97,8 +97,6 @@ private:
 
     const int unselectedCornerSize = 2;
     const int selectedCornerSize = 3;
-
-    Shapes* shapes;
 };
 
 #endif

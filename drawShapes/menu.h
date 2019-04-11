@@ -72,8 +72,6 @@ private:
 
     vector<bool> g_buttonState;
 
-
-    Shapes* shapes;
     Thickness* thickness;
     Color* color;
     Select* select;

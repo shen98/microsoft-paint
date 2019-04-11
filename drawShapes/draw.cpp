@@ -13,11 +13,6 @@ Draw::~Draw()
 
 bool Draw::initialize()
 {
-    shapes = new Shapes();
-    if (!shapes)
-    {
-        return false;
-    }
     return true;
 }
 
@@ -31,7 +26,7 @@ void Draw::drawBrushes(cv::Mat& m, vector<MyBrush> myBrushes)
 {
     for (auto myBrush : myBrushes)
     {
-        if (myBrush.type == NORMAL) shapes->drawLine(m, myBrush.startPos, myBrush.endPos, 
+        if (myBrush.type == NORMAL) drawLine(m, myBrush.startPos, myBrush.endPos, 
             myBrush.color, myBrush.thickness);
         else if (myBrush.type == SQUARE)
         {
@@ -46,11 +41,11 @@ void Draw::drawBrushes(cv::Mat& m, vector<MyBrush> myBrushes)
             p2.x = myBrush.endPos.x + 1.5 * height * sin;
             p2.y = myBrush.endPos.y + 1.5 * height * cos;
 
-            shapes->drawBox(m, p1, p2, myBrush.color, myBrush.thickness);
+            drawBox(m, p1, p2, myBrush.color, myBrush.thickness);
         }
         else if (myBrush.type == SPILL)
         {
-            shapes->drawCircle(m, myBrush.startPos, myBrush.endPos, myBrush.color, myBrush.thickness);
+            drawCircle(m, myBrush.startPos, myBrush.endPos, myBrush.color, myBrush.thickness);
         }
     }
 }
@@ -61,14 +56,14 @@ void Draw::drawShapes(cv::Mat& m, vector<MyShape> myShapes)
     for (auto myShape : myShapes)
     {
         if (!myShape.finished) continue;
-        if (myShape.type == RECTANGLE) shapes->drawBox(m, cv::Point(myShape.corners[0].x, myShape.corners[0].y),
+        if (myShape.type == RECTANGLE) drawBox(m, cv::Point(myShape.corners[0].x, myShape.corners[0].y),
             cv::Point(myShape.corners[3].x, myShape.corners[3].y), cv::Point(myShape.corners[2].x, myShape.corners[2].y),
             cv::Point(myShape.corners[1].x, myShape.corners[1].y), myShape.color, myShape.thickness);
-        else if (myShape.type == LINE) shapes->drawLine(m, cv::Point(myShape.corners[0].x, myShape.corners[0].y),
+        else if (myShape.type == LINE) drawLine(m, cv::Point(myShape.corners[0].x, myShape.corners[0].y),
             cv::Point(myShape.corners[1].x, myShape.corners[1].y), myShape.color, myShape.thickness);
         else if (myShape.type == CIRCLE)
         {
-            shapes->drawEllipse(m, cv::Point(myShape.corners.back().x, myShape.corners.back().y),
+            drawEllipse(m, cv::Point(myShape.corners.back().x, myShape.corners.back().y),
                 cv::Point(myShape.corners[0].x, myShape.corners[0].y), myShape.color, myShape.thickness);
         }
 
