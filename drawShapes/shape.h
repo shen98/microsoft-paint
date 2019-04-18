@@ -87,7 +87,8 @@ private:
     void changeLeftBottomCorner(int indexOfShape, int mousePosX, int mousePosY);
     void changeRightBottomCorner(int indexOfShape, int mousePosX, int mousePosY);
 
-	void ReCenter(int indexOfShape);
+	void reLocateCenter(int indexOfShape);
+	void reLocateRotate(int indexOfShape);
 
 private:
     vector<MyShape> myShapes;
