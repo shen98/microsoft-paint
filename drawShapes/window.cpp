@@ -386,6 +386,7 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
 		{
 			firstTimeRightClicked = true;
 			rightClicked = true;
+			menu->changeDrawingState(false);
 		}
 		break;
 	}

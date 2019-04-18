@@ -4,6 +4,7 @@
 
 #include "data.h"
 #include "shapes.h"
+#include "effect.h"
 
 #define RECTANGLE 0
 #define LINE 1

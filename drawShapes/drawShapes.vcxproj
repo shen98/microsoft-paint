@@ -149,6 +149,7 @@
     <ClInclude Include="color.h" />
     <ClInclude Include="data.h" />
     <ClInclude Include="draw.h" />
+    <ClInclude Include="effect.h" />
     <ClInclude Include="history.h" />
     <ClInclude Include="image.h" />
     <ClInclude Include="menu.h" />
@@ -167,6 +168,7 @@
     <ClCompile Include="color.cpp" />
     <ClCompile Include="draw.cpp" />
     <ClCompile Include="drawShapes.cpp" />
+    <ClCompile Include="effect.cpp" />
     <ClCompile Include="history.cpp" />
     <ClCompile Include="image.cpp" />
     <ClCompile Include="menu.cpp" />

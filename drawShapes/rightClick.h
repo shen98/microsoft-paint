@@ -4,6 +4,7 @@
 
 #include "data.h"
 #include "shapes.h"
+#include "effect.h"
 
 class RightClick
 {
@@ -14,8 +15,11 @@ public:
 	bool initialize();
 
 	void rightclicked(cv::Mat& m, int indexOfShape, int mousePosX, int mousePosY, bool firstTime);
+
 private:
 	void displayRightClick(cv::Mat& m);
+
+	void selectSection(cv::Mat& m, int mousePosX, int mousePosY);
 
 private:
 	const int rightClickBoxWidth = 70;
@@ -28,6 +32,7 @@ private:
 	vector<string> sectionName = { "Delete", "Paste", "Rotate", "Color", "Outline", "Fill" };
 	int rightClickBoxLeftUpCornerPosX = 0;
 	int rightClickBoxLeftUpCornerPosY = 0;
+
 };
 
 #endif

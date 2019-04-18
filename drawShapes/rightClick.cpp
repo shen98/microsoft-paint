@@ -24,6 +24,7 @@ void RightClick::rightclicked(cv::Mat& m, int indexOfShape, int mousePosX, int m
 		rightClickBoxLeftUpCornerPosY = mousePosY;
 	}
 	displayRightClick(m);
+	selectSection(m, mousePosX, mousePosY);
 }
 
 void RightClick::displayRightClick(cv::Mat& m)
@@ -41,4 +42,16 @@ void RightClick::displayRightClick(cv::Mat& m)
 			cv::FONT_HERSHEY_SIMPLEX, 0.6, black, 1, cv::LINE_AA);
 	}
 
+}
+
+void RightClick::selectSection(cv::Mat& m, int mousePosX, int mousePosY)
+{
+	if (mousePosX < rightClickBoxLeftUpCornerPosX || mousePosX > rightClickBoxLeftUpCornerPosX + rightClickBoxWidth
+		|| mousePosY < rightClickBoxLeftUpCornerPosY || mousePosY > rightClickBoxLeftUpCornerPosY + rightClickBoxHeight) return;
+
+	int index = (mousePosY - rightClickBoxLeftUpCornerPosY) / rightClickBoxSectionHeight;
+
+	selectedEffect(m, cv::Point(rightClickBoxLeftUpCornerPosX, rightClickBoxLeftUpCornerPosY + index * rightClickBoxSectionHeight),
+		cv::Point(rightClickBoxLeftUpCornerPosX + rightClickBoxWidth, rightClickBoxLeftUpCornerPosY + (index + 1) * rightClickBoxSectionHeight),
+		0.3, CV_RGB(0, 191, 255), black);
 }
