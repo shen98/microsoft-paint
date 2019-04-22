@@ -7,7 +7,10 @@
 #include "effect.h"
 #include "shape.h"
 
-
+enum SectionNum
+{
+	RotateNum = 4
+};
 
 class RightClick
 {
@@ -25,6 +28,7 @@ private:
 
 	void selectSection(cv::Mat& m, int mousePosX, int mousePosY);
 
+	void displaySectionOptions(cv::Mat& m, int sectionNum);
 
 private:
 	const int rightClickBoxWidth = 70;
@@ -38,6 +42,9 @@ private:
 	int rightClickBoxLeftUpCornerPosX = 0;
 	int rightClickBoxLeftUpCornerPosY = 0;
 
+	vector<string> RotateSection = { "90", "180", "270", "360" };
+
+	int prevSectionNum = -1;
 };
 
 #endif
