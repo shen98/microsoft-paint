@@ -91,120 +91,15 @@ bool Window::initialWindow()
     cv::moveWindow("1", 20, 20);
     cv::setMouseCallback("1", my_mouse_calback, this);
 
+	wakeUpWindow(1);
     for (;;)
     {
-        menuMat.copyTo(backgroundMat(cv::Range(0, g_MenuHeight), cv::Range(0, g_Width)));
-        windowMat.copyTo(backgroundMat(cv::Range(g_MenuHeight + windowOffsetHeight, windowMat.rows + g_MenuHeight + windowOffsetHeight), cv::Range(windowOffsetWidth, windowMat.cols + windowOffsetWidth)));
-        backgroundMat.copyTo(temp);
-        paint->paint(windowMat);
-        paint->selectShape(temp, mouseX, mouseY);
-        menu->selectColor(temp, mouseX, mouseY);
-        paint->checkMousePosOnCorner(temp, mouseX, mouseY);
-		if (rightClicked) paint->rightclicked(temp, changeShape, mouseX, mouseY, firstTimeRightClicked);
-		firstTimeRightClicked = false;
-        if (menu->getButtonState()[Buttons::selectBox] && menu->startDrawing())
-        {
-            if (endPos.x != 0 && endPos.y != 0) drawDottedRectangle(temp, startPos, endPos, black, thichLevel);
-        }
-        else if (menu->getButtonState()[Buttons::rectangle] && menu->startDrawing())
-        {
-            //if (endPos.x != 0 && endPos.y != 0) drawBox(temp, startPos, endPos, drawingColor, thichLevel);
-            if (endPos.x != 0 && endPos.y != 0) paint->drawTempShape(RECTANGLE, temp, startPos, endPos, drawingColor, thichLevel);
-        }
-        else if (menu->getButtonState()[Buttons::line] && menu->startDrawing())
-        {
-            if (endPos.x != 0 && endPos.y != 0) paint->drawTempShape(LINE, temp, startPos, endPos, drawingColor, thichLevel);
-        }
-        else if (menu->getButtonState()[Buttons::ellipse] && menu->startDrawing())
-        {
-            if (endPos.x != 0 && endPos.y != 0) paint->drawTempShape(CIRCLE, temp, startPos, endPos, drawingColor, thichLevel);
-        }
-        else if (menu->getButtonState()[Buttons::roundedRectangle] && menu->startDrawing())
-        {
-            if (endPos.x != 0 && endPos.y != 0) drawRoundedRectangle(temp, startPos, endPos, drawingColor, thichLevel);
-        }
-        else if (menu->getButtonState()[Buttons::triangle] && menu->startDrawing())
-        {
-            if (endPos.x != 0 && endPos.y != 0) drawRegularTriangle(temp, startPos, endPos, drawingColor, thichLevel);
-        }
-        else if (menu->getButtonState()[Buttons::polygon] && menu->startDrawing())
-        {
-            if (endPos.x != 0 && endPos.y != 0) drawPolygon(temp, startPos, endPos, drawingColor, thichLevel);
-        }
-        else if (menu->getButtonState()[Buttons::thickness])
-        {
-            menu->selectThickness(temp, mouseX, mouseY, thichLevel);
-        }
-        else if (menu->getButtonState()[Buttons::import])
-        {
-            menu->changeState(Buttons::cancel);
-            wstring fileName = selectFile();
-            image->loadImage(fileName, windowMat);
-            cv::Mat a;
-            windowMat.copyTo(a);
-            history->addHistory(a);
-        }
-        else if (menu->getButtonState()[Buttons::undo])
-        {
 
-        }
-        else if (menu->getButtonState()[Buttons::redo])
-        {
-            menu->changeState(Buttons::cancel);
-            history->getNextHistory().m.copyTo(windowMat);
-        }
-        else if (menu->getButtonState()[Buttons::selectBrush])
-        {
-            menu->selectBrush(temp, mouseX, mouseY);
-        }
-
-        cv::imshow("1", temp);
-
-        int key = cv::waitKey(10);
-        if (key == 27)      //Esc key
-        {
-            if (!menu->startDrawing()) break;
-            initPoints();
-            menu->changeDrawingState(false);
-            menu->changeSelectState(false);
-        }   
-        else if (key == 13 && menu->getButtonState()[Buttons::polygon])         //enter key
-        {
-            if (endPos.x != 0 && endPos.y != 0) drawPolygon(windowMat, endPos, initPos, drawingColor);
-            history->addHistory(windowMat, changeShape);
-        }
-        else if (key == 13 && selectedSelectBox)
-        {
-            backgroundMat = cv::Mat(g_Height, g_Width, CV_8UC3);
-            paint->resize(windowMat, startPos, endPos, thichLevel);
-            endPos.x = 0; endPos.y = 0;
-            selectedSelectBox = false;
-        }
-        else if (key == 13 && changeShape != -1)
-        {
-            if(selectedShapes) paint->finishDrawingShape(changeShape, true);
-        }
-        else if(key == 26)                                                          //Ctrl + z undo
-        {
-            /*Event e = history->getPrevHistory();
-            e.m.copyTo(windowMat);
-            if (e.indexOfShape != -1)
-            {
-                menu->changeShapeStatus(e.indexOfShape, false);
-                menu->finishDrawingShape(e.indexOfShape, false);
-            }
-            menu->changeState(g_prevSelectedShape);*/
-        }
-        else if (key == 25)                                                         //Ctrl + y redo
-        {
-            /*Event e = history->getNextHistory();
-            e.m.copyTo(windowMat);
-            if (e.indexOfShape != -1)
-            {
-                menu->changeShapeStatus(e.indexOfShape, true);
-            }
-            menu->changeState(g_prevSelectedShape);*/
-        }
+		int key = cv::waitKey(10);
+		if (key != -1 || wakeUp)
+		{
+			if(wakeUpWindow(key) == -1) break;
+		}
     }
 
     return true;
@@ -219,14 +114,17 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
         if (paint->selectedRotate() && changeShapeCorner)
         {
             paint->rotateShape(windowMat, changeShape, x, y);
+			wakeUp = true;
         }
         if (changeShapeCorner)
         {
+			wakeUp = true;
             paint->changeShapeCorner(changeShape, x, y);
             break;
         }
         if (startDrawWithBrush)
         {
+			wakeUp = true;
             paint->drawWithBrush(windowMat, startPos, cv::Point(x, y), brushType, drawingColor, thichLevel);
             startPos.x = x; startPos.y = y;
         }
@@ -237,6 +135,19 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
     break;
     case cv::EVENT_LBUTTONDOWN:
     {
+		wakeUp = true;
+		if (rightClicked)
+		{
+			int index = paint->selectedRightClickSection(changeShape, x, y);
+			if (index == RightClickSection::RC_Delete)
+			{
+				changeShape--;
+				selectedShapes = false;
+				menu->changeState(g_prevSelectedShape);
+			}
+			rightClicked = false;
+			break;
+		}
         cv::Point p = paint->checkMousePosOnCorner(temp, x, y);
         if (p != cv::Point(-1, -1))
         {
@@ -297,6 +208,7 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
                 startPos.x = x; startPos.y = y;
                 menu->changeSelectState(true);
             }
+			selectedShapes = true;
         }
         else if (menu->getSelectBrush() && menu->getButtonState()[Buttons::selectBrush])
         {
@@ -330,6 +242,7 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
     break;
     case cv::EVENT_LBUTTONUP:
     {
+		wakeUp = false;
         if (changeShapeCorner)
         {
             paint->changeShapeStatus(changeShape, true);
@@ -382,6 +295,7 @@ void Window::onMouse(int event, int x, int y, int flags, void* param)
 	break;
 	case cv::EVENT_RBUTTONDOWN:
 	{
+		wakeUp = true;
 		if (selectedShapes) 
 		{
 			firstTimeRightClicked = true;
@@ -399,6 +313,121 @@ void Window::initPoints()
     startPos.y = 0;
     endPos.x = 0;
     endPos.y = 0;
+}
+
+int Window::wakeUpWindow(int key)
+{
+	menuMat.copyTo(backgroundMat(cv::Range(0, g_MenuHeight), cv::Range(0, g_Width)));
+	windowMat.copyTo(backgroundMat(cv::Range(g_MenuHeight + windowOffsetHeight, windowMat.rows + g_MenuHeight + windowOffsetHeight), cv::Range(windowOffsetWidth, windowMat.cols + windowOffsetWidth)));
+	backgroundMat.copyTo(temp);
+	paint->paint(windowMat);
+	paint->selectShape(temp, mouseX, mouseY);
+	menu->selectColor(temp, mouseX, mouseY);
+	paint->checkMousePosOnCorner(temp, mouseX, mouseY);
+	if (rightClicked) paint->rightclicked(temp, changeShape, mouseX, mouseY, firstTimeRightClicked);
+	firstTimeRightClicked = false;
+	if (menu->getButtonState()[Buttons::selectBox] && menu->startDrawing())
+	{
+		if (endPos.x != 0 && endPos.y != 0) drawDottedRectangle(temp, startPos, endPos, black, thichLevel);
+	}
+	else if (menu->getButtonState()[Buttons::rectangle] && menu->startDrawing())
+	{
+		if (endPos.x != 0 && endPos.y != 0) paint->drawTempShape(RECTANGLE, temp, startPos, endPos, drawingColor, thichLevel);
+	}
+	else if (menu->getButtonState()[Buttons::line] && menu->startDrawing())
+	{
+		if (endPos.x != 0 && endPos.y != 0) paint->drawTempShape(LINE, temp, startPos, endPos, drawingColor, thichLevel);
+	}
+	else if (menu->getButtonState()[Buttons::ellipse] && menu->startDrawing())
+	{
+		if (endPos.x != 0 && endPos.y != 0) paint->drawTempShape(CIRCLE, temp, startPos, endPos, drawingColor, thichLevel);
+	}
+	else if (menu->getButtonState()[Buttons::roundedRectangle] && menu->startDrawing())
+	{
+		if (endPos.x != 0 && endPos.y != 0) drawRoundedRectangle(temp, startPos, endPos, drawingColor, thichLevel);
+	}
+	else if (menu->getButtonState()[Buttons::triangle] && menu->startDrawing())
+	{
+		if (endPos.x != 0 && endPos.y != 0) drawRegularTriangle(temp, startPos, endPos, drawingColor, thichLevel);
+	}
+	else if (menu->getButtonState()[Buttons::polygon] && menu->startDrawing())
+	{
+		if (endPos.x != 0 && endPos.y != 0) drawPolygon(temp, startPos, endPos, drawingColor, thichLevel);
+	}
+	else if (menu->getButtonState()[Buttons::thickness])
+	{
+		menu->selectThickness(temp, mouseX, mouseY, thichLevel);
+	}
+	else if (menu->getButtonState()[Buttons::import])
+	{
+		menu->changeState(Buttons::cancel);
+		wstring fileName = selectFile();
+		image->loadImage(fileName, windowMat);
+		cv::Mat a;
+		windowMat.copyTo(a);
+		history->addHistory(a);
+	}
+	else if (menu->getButtonState()[Buttons::undo])
+	{
+
+	}
+	else if (menu->getButtonState()[Buttons::redo])
+	{
+		menu->changeState(Buttons::cancel);
+		history->getNextHistory().m.copyTo(windowMat);
+	}
+	else if (menu->getButtonState()[Buttons::selectBrush])
+	{
+		menu->selectBrush(temp, mouseX, mouseY);
+	}
+
+	cv::imshow("1", temp);
+
+	if (key == 27)      //Esc key
+	{
+		if (!menu->startDrawing()) return -1;
+		initPoints();
+		menu->changeSelectState(false);
+		menu->changeDrawingState(false);
+	}
+	else if (key == 13 && menu->getButtonState()[Buttons::polygon])         //enter key
+	{
+		if (endPos.x != 0 && endPos.y != 0) drawPolygon(windowMat, endPos, initPos, drawingColor);
+		history->addHistory(windowMat, changeShape);
+	}
+	else if (key == 13 && selectedSelectBox)
+	{
+		backgroundMat = cv::Mat(g_Height, g_Width, CV_8UC3);
+		paint->resize(windowMat, startPos, endPos, thichLevel);
+		endPos.x = 0; endPos.y = 0;
+		selectedSelectBox = false;
+	}
+	else if (key == 13 && changeShape != -1)
+	{
+		if (selectedShapes) paint->finishDrawingShape(changeShape, true);
+	}
+	else if (key == 26)                                                          //Ctrl + z undo
+	{
+		/*Event e = history->getPrevHistory();
+		e.m.copyTo(windowMat);
+		if (e.indexOfShape != -1)
+		{
+		menu->changeShapeStatus(e.indexOfShape, false);
+		menu->finishDrawingShape(e.indexOfShape, false);
+		}
+		menu->changeState(g_prevSelectedShape);*/
+	}
+	else if (key == 25)                                                         //Ctrl + y redo
+	{
+		/*Event e = history->getNextHistory();
+		e.m.copyTo(windowMat);
+		if (e.indexOfShape != -1)
+		{
+		menu->changeShapeStatus(e.indexOfShape, true);
+		}
+		menu->changeState(g_prevSelectedShape);*/
+	}
+	
 }
 
 wstring Window::selectFile()

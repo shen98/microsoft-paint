@@ -28,7 +28,7 @@ bool Image::loadImage(wstring fileName, cv::Mat& m)
     img.copyTo(m(cv::Range(0, img.rows), cv::Range(0, img.cols)));
 
     pos = cv::Rect(cv::Point(0, 0), cv::Point(pos.height, pos.width));
-    cout << pos.tl() << " " << pos.br() << endl;
+    //cout << pos.tl() << " " << pos.br() << endl;
     myImage image(img, pos);
     images.push_back(image);
 

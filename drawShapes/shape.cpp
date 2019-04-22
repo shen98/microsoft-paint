@@ -97,8 +97,6 @@ void Shape::drawTempRect(cv::Mat& m, cv::Point p1, cv::Point p2, cv::Scalar colo
     int d = getDistance(rotate, center);
     if (finished)
     {
-        cout << d << endl;
-        cout << getDistance(rotate, center) << endl;
         MyShape curShape(p1, p2, p3, p4, rotate, RECTANGLE, color, thickness, k1, k2, finished, center, d);
         myShapes.push_back(curShape);
     }
@@ -244,9 +242,33 @@ void Shape::rotateShape(cv::Mat& m, int indexOfShape, int mousePosX, int mousePo
     myShapes[indexOfShape].corners[ShapeCorners::Rotate] = newRotate;
 }
 
+void Shape::rotateShape(int indexOfShape, int degree)
+{
+	MyShape& curShape = myShapes[indexOfShape];
+	for (auto corner : curShape.corners)
+	{
+		double length = getDistance(corner, curShape.corners[ShapeCorners::Center]);
+		/*double k1, k2, c1, c2, newX, newY;
+		k1 = (corner.y - curShape.corners[ShapeCorners::Center].y) / (corner.x - curShape.corners[ShapeCorners::Center].x);
+		c1 = curShape.corners[ShapeCorners::Center].y - k1 * curShape.corners[ShapeCorners::Center].x;
+		if(degree == 90 || degree == 270) k2 = -1 / k1;
+		else if (degree == 180 || degree == 360) k2 = k1;
+		c2 = curShape.corners[ShapeCorners::Center].y - k2 * curShape.corners[ShapeCorners::Center].x;*/
+
+		//double sin = 
+	}
+}
+
 void Shape::changeSelectedStatus(int status)
 {
     g_selectedCorner = status;
+}
+
+void Shape::deleteShape(int indexOfShape)
+{
+	cout << myShapes.size() << endl;
+	if (myShapes.size() < indexOfShape) return;
+	else myShapes.erase(myShapes.begin() + indexOfShape);
 }
 
 void Shape::changeCorner(int indexOfShape, int corner, int mousePosX, int mousePosY)

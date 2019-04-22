@@ -23,7 +23,7 @@ public:
 private:
     bool initialWindow();
     void initPoints();
-
+	int wakeUpWindow(int key);
     wstring selectFile();
 
 private:
@@ -43,6 +43,8 @@ private:
 
 	bool rightClicked = false;					//Display right click box
 	bool firstTimeRightClicked = false;			//Position of right click box
+
+	bool wakeUp = false;						//Check if there is event happened to wake up window
 
     bool changeShapeCorner = false;
     int changeShape = -1;

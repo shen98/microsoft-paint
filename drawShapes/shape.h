@@ -77,6 +77,9 @@ public:
     
     void changeSelectedStatus(int status);
 
+	void deleteShape(int indexOfShape);
+	void rotateShape(int indexOfShape, int degree);
+
 private:
     void changeCorner(int indexOfShape, int corner, int mousePosX, int mousePosY);
 

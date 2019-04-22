@@ -38,7 +38,7 @@ Event History::getPrevHistory()
     {
         currentIndex--;
     }
-    cout << currentIndex << endl;
+    //cout << currentIndex << endl;
     return history[currentIndex];
 }
 

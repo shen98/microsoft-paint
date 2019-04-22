@@ -5,6 +5,9 @@
 #include "data.h"
 #include "shapes.h"
 #include "effect.h"
+#include "shape.h"
+
+
 
 class RightClick
 {
@@ -15,11 +18,13 @@ public:
 	bool initialize();
 
 	void rightclicked(cv::Mat& m, int indexOfShape, int mousePosX, int mousePosY, bool firstTime);
+	int selectedRightClickSection(Shape* shape, int indexOfShape, int mousePosX, int mousePosY);
 
 private:
 	void displayRightClick(cv::Mat& m);
 
 	void selectSection(cv::Mat& m, int mousePosX, int mousePosY);
+
 
 private:
 	const int rightClickBoxWidth = 70;

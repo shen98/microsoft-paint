@@ -145,6 +145,11 @@ void Paint::rightclicked(cv::Mat& m ,int indexOfShape, int mousePosX, int mouseP
 	rightClick->rightclicked(m, indexOfShape, mousePosX, mousePosY, firstTime);
 }
 
+int Paint::selectedRightClickSection(int indexOfShape, int mousePosX, int mousePosY)
+{
+	return rightClick->selectedRightClickSection(shape, indexOfShape, mousePosX, mousePosY);
+}
+
 bool Paint::selectedRotate()
 {
     return shape->selectedRatote();

@@ -37,7 +37,7 @@ public:
     void drawWithBrush(cv::Mat& m, cv::Point startPos, cv::Point endPos, int type, cv::Scalar color, int thickness = 1);
 
 	void rightclicked(cv::Mat& m, int indexOfShape, int mousePosX, int mousePosY, bool firstTime);
-
+	int selectedRightClickSection(int indexOfShape, int mousePosX, int mousePosY);
 private:
     Draw* draw;
     Shape* shape;

@@ -36,6 +36,14 @@ enum Section
     other = 1058
 };
 
-
+enum RightClickSection
+{
+	RC_Delete,
+	RC_Paste,
+	RC_Rotate,
+	RC_Color,
+	RC_Outline,
+	RC_Fill,
+};
 
 #endif // !_DATA_H_

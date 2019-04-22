@@ -27,6 +27,44 @@ void RightClick::rightclicked(cv::Mat& m, int indexOfShape, int mousePosX, int m
 	selectSection(m, mousePosX, mousePosY);
 }
 
+int RightClick::selectedRightClickSection(Shape* shape, int indexOfShape, int mousePosX, int mousePosY)
+{
+	if (mousePosX < rightClickBoxLeftUpCornerPosX || mousePosX > rightClickBoxLeftUpCornerPosX + rightClickBoxWidth
+		|| mousePosY < rightClickBoxLeftUpCornerPosY || mousePosY > rightClickBoxLeftUpCornerPosY + rightClickBoxHeight) return -1;
+	int index = (mousePosY - rightClickBoxLeftUpCornerPosY) / rightClickBoxSectionHeight;
+	
+	switch (index)
+	{
+	case RightClickSection::RC_Delete:
+	{
+		shape->deleteShape(indexOfShape);
+		return RightClickSection::RC_Delete;
+	}
+	case RightClickSection::RC_Paste:
+	{
+		break;
+	}
+	case RightClickSection::RC_Rotate:
+	{
+		break;
+	}
+	case RightClickSection::RC_Color:
+	{
+		break;
+	}
+	case RightClickSection::RC_Outline:
+	{
+		break;
+	}
+	case RightClickSection::RC_Fill:
+	{
+		break;
+	}
+	default:
+		break;
+	}
+}
+
 void RightClick::displayRightClick(cv::Mat& m)
 {
 	drawBox(m, cv::Point(rightClickBoxLeftUpCornerPosX, rightClickBoxLeftUpCornerPosY), 
