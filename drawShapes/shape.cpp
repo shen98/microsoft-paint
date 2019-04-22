@@ -244,10 +244,12 @@ void Shape::rotateShape(cv::Mat& m, int indexOfShape, int mousePosX, int mousePo
 
 void Shape::rotateShape(int indexOfShape, int degree)
 {
+	double r = 1.5708;
+	cout << degree << endl;
 	MyShape& curShape = myShapes[indexOfShape];
-	for (auto corner : curShape.corners)
+	for (auto& corner : curShape.corners)
 	{
-		double length = getDistance(corner, curShape.corners[ShapeCorners::Center]);
+		//double length = getDistance(corner, curShape.corners[ShapeCorners::Center]);
 		/*double k1, k2, c1, c2, newX, newY;
 		k1 = (corner.y - curShape.corners[ShapeCorners::Center].y) / (corner.x - curShape.corners[ShapeCorners::Center].x);
 		c1 = curShape.corners[ShapeCorners::Center].y - k1 * curShape.corners[ShapeCorners::Center].x;
@@ -256,6 +258,17 @@ void Shape::rotateShape(int indexOfShape, int degree)
 		c2 = curShape.corners[ShapeCorners::Center].y - k2 * curShape.corners[ShapeCorners::Center].x;*/
 
 		//double sin = 
+
+		float tempX = curShape.corners[ShapeCorners::Center].x - corner.x;
+		float tempY = curShape.corners[ShapeCorners::Center].y - corner.y;
+
+		cout << corner << endl;
+		cout << cos(r) << endl;
+		// now apply rotation
+		corner.x = curShape.corners[ShapeCorners::Center].x + tempX*cos(r) - tempY*sin(r);
+		corner.y = curShape.corners[ShapeCorners::Center].y + tempX*sin(r) + tempY*cos(r);
+		cout << corner << endl;
+		cout << endl;
 	}
 }
 

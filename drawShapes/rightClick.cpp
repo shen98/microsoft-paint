@@ -46,7 +46,8 @@ int RightClick::selectedRightClickSection(Shape* shape, int indexOfShape, int mo
 	}
 	case RightClickSection::RC_Rotate:
 	{
-		break;
+		shape->rotateShape(indexOfShape, 90);
+		return RightClickSection::RC_Rotate;
 	}
 	case RightClickSection::RC_Color:
 	{
