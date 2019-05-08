@@ -12,6 +12,7 @@
 #include "select.h"
 #include "brush.h"
 #include "shape.h"
+#include "file.h"
 using namespace std;
 
 enum Buttons
@@ -77,6 +78,7 @@ private:
     Select* select;
     Brush* brush;
     Shape* shape;
+	File* file;
 };
 
 #endif

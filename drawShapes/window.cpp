@@ -408,6 +408,8 @@ int Window::wakeUpWindow(int key)
 	}
 	else if (key == 26)                                                          //Ctrl + z undo
 	{
+		cout << 1 << endl;
+		cv::imwrite("Gray_Image.jpg", windowMat);
 		/*Event e = history->getPrevHistory();
 		e.m.copyTo(windowMat);
 		if (e.indexOfShape != -1)

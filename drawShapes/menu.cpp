@@ -50,6 +50,12 @@ bool Menu::initialize(cv::Mat& m, int width)
         return false;
     }
 
+	file = new File();
+	if (!file)
+	{
+		cout << "Cannot create file object." << endl;
+	}
+
     initialMenu(m, width);
 
     return true;
@@ -68,6 +74,7 @@ void Menu::initialMenu(cv::Mat& m, int width)
     cv::line(m, cv::Point(600, iconHeight + g_MenuOffsetHeight), cv::Point(600, g_MenuHeight - g_MenuOffsetHeight), CV_RGB(135, 206, 250));
     cv::line(m, cv::Point(660, iconHeight + g_MenuOffsetHeight), cv::Point(660, g_MenuHeight - g_MenuOffsetHeight), CV_RGB(135, 206, 250));
 
+	file->initializeFile(m);
     shape->initialShape(m);
     thickness->initialThickness(m);
     color->initializeColor(m);
